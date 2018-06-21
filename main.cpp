@@ -1,7 +1,9 @@
 #include <iostream>
-#include "config.h"
-#include <string>
 #include <windows.h>
+#include <iomanip>
+#include <fstream>
+#include <conio.h>
+#include "config.h"
 #include "Mylib.h"
 #include "Function_TTN.h"
 using namespace std;

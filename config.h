@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <string>
 #define TRUE 1
 #define FALSE 0
 #define EMPTY 0
@@ -27,7 +26,7 @@ struct nodeMH
 	monhoc info;
 	struct nodeMH *next;
 };
-typedef nodeMH * PTRMH;
+typedef nodeMH *PTRMH;
 
 struct diem
 {
@@ -39,14 +38,14 @@ struct nodediem
 	diem info;
 	struct nodediem *next;
 };
-typedef nodediem * PTRD;
+typedef nodediem *PTRD;
 struct sinhvien
 {
 	char password[32];
 	char MASV[11];
 	char HO[51];
 	char TEN[11];
-	char PHAI[5] ;		
+	char PHAI[5];
 };
 struct nodesv
 {
@@ -54,12 +53,12 @@ struct nodesv
 	nodediem *Firstdiem;
 	struct nodesv *next;
 };
-typedef nodesv * PTRSV;
+typedef nodesv *PTRSV;
 struct Lop
 {
 	char MALOP[11];
 	char TENLOP[100];
-	nodesv *dssv;
+	PTRSV Firstsv;
 };
 struct dslop
 {
