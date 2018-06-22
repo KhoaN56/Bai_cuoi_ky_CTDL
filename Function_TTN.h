@@ -305,7 +305,6 @@ void loadMarkList(Lop Class, monhoc MH, char *filename)
 		ifs >> code;
 		while(code[0] != "#")
 		{
-			
 			p = searchStudent(Class.Firstsv, code);
 			ifs >> searchMark(p->Firstdiem, MH)->info.mark;
 			ifs >> code;
