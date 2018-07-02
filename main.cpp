@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <fstream>
 #include <conio.h>
+#include <stdlib.h>
 #include "config.h"
 #include "Mylib.h"
 #include "Function_TTN.h"

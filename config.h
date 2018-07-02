@@ -18,8 +18,8 @@ const string ER_FULL_LIST = "Danh sach day!!";
 
 struct monhoc
 {
-	char MAMH;
-	char TENMH;	
+	char MAMH[7];
+	char TENMH[50];
 };
 struct nodeMH
 {
@@ -66,4 +66,32 @@ struct dslop
 	Lop *lop;
 };
 
+struct cauhoi
+{
+	string noidung;
+	char mamh[7]
+	string A;
+	string B;
+	string C;
+	string D;
+	char dapan;
+};
 
+struct nodecauhoi
+{
+	int id;
+	int bf;
+	cauhoi info;
+	struct nodecauhoi *left, *right;
+};
+typedef nodecauhoi *PTRQ;
+
+char menuGV [7][50] = {"1. Nhap lop                                      ",
+					   "2. In danh sach lop                              ",
+					   "3. Nhap sinh vien cua lop                        ",
+					   "4. Nhap mon hoc                                  ",
+					   "5. Nhap cau hoi thi                              ",
+					   "6. Thi trac nghiem                               ",
+					   "7. Thoat                                         "
+					   };
+					   

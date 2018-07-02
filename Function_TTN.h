@@ -6,6 +6,7 @@ int Empty_List(dslop ds);
 void Themlop(dslop &ds);
 //------Student List Proccessing------
 int emptyList(PTRSV First);
+int countStudent(PTRSV First);
 void insertFirst(PTRSV &First, sinhvien x);
 void insertAfter(PTRSV p, sinhvien x);
 void insertOrder(PTRSV &First, sinhvien sv);
@@ -17,24 +18,30 @@ int deleteAfter(PTRSV p);
 int deleteStudent(PTRSV &First, sinhvien sv);
 //------Mark Proccessing------
 int emptyList(PTRD First);
+int countMark(PTRD First);
 void insertFirst(PTRD &First, diem x);
 void insertAfter(PTRD p, diem x);
 PTRD searchMark(PTRD First, monhoc MH);
 //------Subject Proccessing------
 int emptyList(PTRMH First);
+int countSubject(PTRMH FirstMH);
 void insertFirst(PTRMH &First, monhoc x);
 void insertAfter(PTRMH p, monhoc x);
 PTRMH searchMaMH(PTRMH First, char *mamh);
-//------Display Result------s
+//------Quest tree proccessing------
+PTRQ search(PTRQ root, int id);
+//------Display Result------
 void PrintClassList(dslop ds);
 //------Save file------
 void saveClassList(dslop ds, char *filename);
 void saveStudentList(Lop Class, char *filename);
 void saveMarkList(Lop Class, monhoc MH, char *filename);
+void saveWork(dslop ds, char *filename, PTRMH FirstMH);
 //------Load files------
 void loadClassList(dslop &ds, char *filename);
 void loadStudentList(Lop &Class, char *filename);
 void loadMarkList(Lop Class, monhoc MH, char *filename);
+void loadWork(dslop &ds, char *filename, PTRMH &FirstMH);
 //------Clear Lists------
 void clearList(PTRSV &First);
 void clearList(PTRD &First);
@@ -144,7 +151,7 @@ int deleteFirst(PTRSV &First)
 		First = p->next;
 		delete p;
 	}
-	return DONE;
+	return COMPLETE;
 }
 
 int deleteAfter(PTRSV p)
@@ -157,7 +164,7 @@ int deleteAfter(PTRSV p)
 		p->next = q->next;
 		delete q;
 	}
-	return DONE;
+	return COMPLETE;
 }
 
 int deleteStudent(PTRSV &First, sinhvien sv)
@@ -170,7 +177,7 @@ int deleteStudent(PTRSV &First, sinhvien sv)
 		p = First;
 		First = p->next;
 		delete p;
-		return DONE;
+		return COMPLETE;
 	}
 	for(p = First; p->next != NULL && strcmp(p->next->info.MASV, sv.MASV) != 0; p = p->next);
 	if(p->next != NULL)
@@ -178,7 +185,7 @@ int deleteStudent(PTRSV &First, sinhvien sv)
 		PTRSV q = p->next;
 		p->next = q->next;
 		delete q;
-		return DONE;
+		return COMPLETE;
 	}
 	return FALSE;
 }
@@ -245,6 +252,20 @@ void loadStudentList(Lop &Class, char *filename)
 	}
 }
 
+int countStudent(PTRSV First)
+{
+	PTRSV p;
+	int i = 0;
+	if(First == NULL)
+	{
+		cout << "Danh sach rong!";
+		Sleep(2000);
+		return 0;
+	}
+	for(p = First; p != NULL; p = p->next , ++i);
+	return i;
+}
+
 //------Mark Proccessing------
 int emptyList(PTRD First)
 {
@@ -303,7 +324,7 @@ void loadMarkList(Lop Class, monhoc MH, char *filename)
 	if(strcmp(Class.MALOP, code) == 0 && strcmp(MaMH, MH.MAMH) == 0)
 	{
 		ifs >> code;
-		while(code[0] != "#")
+		while(code[0] != '#')
 		{
 			p = searchStudent(Class.Firstsv, code);
 			ifs >> searchMark(p->Firstdiem, MH)->info.mark;
@@ -324,6 +345,20 @@ PTRD searchMark(PTRD First, monhoc MH)
 		if(strcmp(p->info.Mamh, MH.MAMH) == 0)
 			return p;
 	return NULL;
+}
+
+int countMark(PTRD First)
+{
+	PTRD p;
+	int i = 0;
+	if(First == NULL)
+	{
+		cout << "Danh sach diem rong!";
+		Sleep(2000);
+		return 0;
+	}
+	for(p = First; p !=NULL ; p = p->next, ++i);
+	return i;
 }
 
 //------Subject Proccessing------
@@ -362,14 +397,45 @@ PTRMH searchMaMH(PTRMH First, char *mamh)
 	return NULL;
 }
 
+int countSubject(PTRMH FirstMH)
+{
+	PTRMH p;
+	int i = 0;
+	if(FirstMH == NULL)
+	{
+		cout << "Danh sach mon hoc rong!";
+		Sleep(2000);
+		return 0;
+	}
+	for(p = FirstMH; p != NULL; p = p->next , ++i);
+	return i;
+}
 
+//------Quest tree proccessing------
+
+PTRQ search(PTRQ root, int id)
+{
+	PTRQ p = root;
+	while(p != NULL && id != p->id)
+		if(id < p->id)
+			p = p->left;
+		else
+			p = p->right;
+	return p;
+}
+
+void createAVLTree(PTRQ &root)
+{
+	int id;
+	
+}
 //------Others------
-int NhapChuoi(char *x)
+char NhapChuoi(char *x)
 {
 	char c;
 	int i = 0;
 	//cout << "Nhap ten lop " << count + 1 << ": ";
-	do
+	while(1)
 	{
 		c = getch();
 		if (c == 0) c = getch();
@@ -381,7 +447,7 @@ int NhapChuoi(char *x)
 		else if (c == ENTER)
 		{
 			if (strlen(x) < 1)
-				return UNDONE;
+				return ESC;
 			x[i] = '\0';
 			cout << endl;
 			break;
@@ -399,10 +465,101 @@ int NhapChuoi(char *x)
 		cout << c;
 		x[i] = c;
 		++i;
-	} while (c != ENTER && c != ESC);
-	if (c == ESC)
-		return UNDONE;
-	return COMPLETE;
+	}
+	return c;
+}
+
+void saveWork(dslop ds, char *filename, PTRMH FirstMH)
+{
+	ofstream ofs;
+	PTRSV p;
+	PTRD q;
+	PTRMH s;
+	ofs.open(filename, ios_base::out);
+	if(ofs.fail()==true)
+	{
+		cout << "Khong mo duoc file" << endl;
+		Sleep(3000);
+		return;
+	}
+	ofs << ds.n << endl;
+	for(int i = 0; i < ds.n; ++i)
+	{
+		ofs << ds.lop[i].TENLOP << endl;
+		ofs << ds.lop[i].MALOP << endl;
+		ofs << countStudent(ds.lop[i].Firstsv);
+		for(p = ds.lop[i].Firstsv; p != NULL; p=p->next)
+		{
+			ofs << p->info.MASV << ",";
+			ofs << p->info.password << ",";
+			ofs << p->info.HO << ",";
+			ofs << p->info.TEN << ",";
+			ofs << p->info.PHAI << ",";
+			ofs << countMark(p->Firstdiem);
+			for(q = p->Firstdiem; q != NULL; q=q->next)
+			{
+				ofs << q->info.Mamh << ",";
+				if(q->next == NULL)
+					ofs << q->info.mark << endl;
+				else
+					ofs << q->info.mark << ",";
+			}
+		}
+	}
+	ofs << countSubject(FirstMH);
+	for(s = FirstMH; s != NULL; s = s->next)
+	{
+		ofs << s->info.TENMH << ",";
+		ofs << s->info.MAMH << endl;
+	}
+}
+
+void loadWork(dslop &ds, char *filename, PTRMH &FirstMH)
+{
+	ifstream ifs;
+	PTRSV p;
+	PTRD q;
+	PTRMH s;
+	int i, j, k, maxsv, maxdiem, maxmh;
+	char buffer[100];
+	ifs.open(filename, ios_base::in);
+	if(ifs.fail() == true)
+	{
+		cout << "Khong mo duoc file" << endl;
+		Sleep(3000);
+		return;
+	}
+	ifs >> ds.n;
+	for(i = 0; i < ds.n; ++i)
+	{
+		ifs >> ds.lop[i].TENLOP;
+		ifs >> ds.lop[i].MALOP;
+		ifs >> maxsv;
+		for(p = ds.lop[i].Firstsv, j = 0; j < maxsv; p = p->next, ++j)
+		{
+			p = new nodesv;
+			ifs.getline(p->info.MASV, 11, ',');
+			ifs.getline(p->info.password, 32, ',');
+			ifs.getline(p->info.HO, 51, ',');
+			ifs.getline(p->info.TEN, 11, ',');
+			ifs.getline(p->info.PHAI, 5, ',');
+			ifs.getline(buffer, 100, ',');
+			maxdiem = atoi(buffer);
+			for(q = p->Firstdiem, k = 0; k < maxdiem; q = q->next, ++k)
+			{
+				q = new nodediem;
+				ifs.getline(q->info.Mamh, 9, ',');
+				ifs.getline(buffer, 100, ',');
+				q->info.mark = atoi(buffer);
+			}
+		}
+	}
+	ifs >> maxmh;
+	for(s = FirstMH, i = 0; i < maxmh; s = s->next, ++i)
+	{
+		ifs.getline(s->info.TENMH, 50, ',');
+		ifs >> s->info.MAMH;
+	}
 }
 
 //------Class List Proccessing-------
@@ -411,37 +568,39 @@ void Themlop(dslop &ds)
 {
 	int i;
 	char cf;
-	for (i = 0; i < ds.n; ++i)
+	if (ds.n == MAXLOP)
 	{
-		/*if (Full_List(ds) == TRUE)
-		{
-			cout << ER_FULL_LIST << endl;
-			Sleep(1500);
-			return;
-		}*/
+		cout << ER_FULL_LIST << endl;
+		Sleep(1500);
+		return;
+	}
+	for (i = 0; i < MAXLOP; ++i)
+	{
 //		ds.lop[i].TENLOP = NULL;
+	check:
 		cout << "Nhap ten lop thu " << i + 1 << ": ";
-		if (NhapChuoi(ds.lop[i].TENLOP) == UNDONE)
+		if (NhapChuoi(ds.lop[i].TENLOP) == ESC)
 		{
+			cout << "Ban chua nhap ten lop, ban co muon nhap lai khong?(y/n) ";
+			cin >> cf;
+			goto check;
 			--i;
 			break;
 		}
-	check:
+	check1:
 		cout << "Nhap ma lop thu " << i + 1 << ": ";
-		if (NhapChuoi(ds.lop[i].MALOP) == UNDONE)
+		if (NhapChuoi(ds.lop[i].MALOP) == ESC)
 		{
-			if (strlen(ds.lop[i].TENLOP) == EMPTY)
-			{
 				cout << "\nBan chua nhap ma lop, ban co muon nhap lai khong?(y/n) ";
 				cin >> cf;
 				if (cf == 'y')
-					goto check;
-			}
+					goto check1;
 			--i;
 			break;
 		}
 		system("cls");
-		++ds.n;
+		if(i == ds.n - 1)
+			++ds.n;
 	}
 	system("cls");
 	ds.n = i + 1;
