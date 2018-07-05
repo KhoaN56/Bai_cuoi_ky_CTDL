@@ -69,7 +69,7 @@ struct dslop
 struct cauhoi
 {
 	string noidung;
-	char mamh[7]
+	char mamh[7];
 	string A;
 	string B;
 	string C;

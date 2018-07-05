@@ -8,8 +8,8 @@ void Themlop(dslop &ds);
 int emptyList(PTRSV First);
 int countStudent(PTRSV First);
 void insertFirst(PTRSV &First, sinhvien x);
-void insertAfter(PTRSV p, sinhvien x);
-void insertOrder(PTRSV &First, sinhvien sv);
+void insertAfter(PTRSV p, sinhvien x, PTRD Firstdiem);
+void insertOrder(PTRSV &First, sinhvien sv, PTRD Firstdiem);
 PTRSV searchStudent(PTRSV First, char *masv);
 void selectionSort(PTRSV &First);
 char *makeString(sinhvien sv);
@@ -31,6 +31,9 @@ PTRMH searchMaMH(PTRMH First, char *mamh);
 //------Quest tree proccessing------
 PTRQ search(PTRQ root, int id);
 //------Display Result------
+void printString(char *x);
+void printStudentList(PTRSV First);
+void printSubjectList(PTRMH First);
 void PrintClassList(dslop ds);
 //------Save file------
 void saveClassList(dslop ds, char *filename);
@@ -46,7 +49,7 @@ void loadWork(dslop &ds, char *filename, PTRMH &FirstMH);
 void clearList(PTRSV &First);
 void clearList(PTRD &First);
 void clearList(PTRMH &First);
-void clearList(dslop &lop);
+void clearList(dslop &ds);
 
 
 
@@ -72,7 +75,7 @@ void insertFirst(PTRSV &First, sinhvien x)
    p->next = First;
    First = p;
 }
-void insertAfter(PTRSV p, sinhvien x)
+void insertAfter(PTRSV p, sinhvien x, PTRD Firstdiem)
 {
    PTRSV q;
    if(p == NULL)
@@ -81,16 +84,18 @@ void insertAfter(PTRSV p, sinhvien x)
    {
    		q = new nodesv;
     	q->info = x;
+    	q->Firstdiem = Firstdiem;
     	q->next = p->next;
     	p->next = q;
    }
 }
 
-void insertOrder(PTRSV &First, sinhvien sv)
+void insertOrder(PTRSV &First, sinhvien sv, PTRD Firstdiem)
 {
 	PTRSV after, before, p;
 	p = new nodesv;
 	p->info = sv;
+	p->Firstdiem = Firstdiem;
 	for(after = First; after != NULL && strcmp(makeString(after->info), makeString(sv)) < 0; before = after, after = after->next);
 	if(after == First)
 	{
@@ -266,6 +271,29 @@ int countStudent(PTRSV First)
 	return i;
 }
 
+void printStudentList(PTRSV First)
+{
+	PTRSV p;
+	int i = 1;
+	if(First == NULL)
+	{
+		cout << "Danh sach rong!!" << endl;
+		Sleep(2000);
+		return;
+	}
+	cout << setw(4) << "STT" << setw(20) << "Ho va ten" << setw(15) << "Ma sinh vien" << endl;
+	for(p = First; p != NULL; p = p->next, ++i)
+	{
+		cout << setw(3) << i << setw(5);
+		printString(p->info.HO);
+		cout << " ";
+		printString(p->info.TEN);
+		cout << setw(10);
+		printString(p->info.MASV);
+		cout << endl;
+	}
+}
+
 //------Mark Proccessing------
 int emptyList(PTRD First)
 {
@@ -411,6 +439,21 @@ int countSubject(PTRMH FirstMH)
 	return i;
 }
 
+void printSubjectList(PTRMH First)
+{
+	PTRMH p;
+	int i = 1;
+	cout << setw(4) << "STT" << setw(20) << "Ten mon hoc" << setw(15) << "Ma mon hoc" << endl;
+	for(p = First; p != NULL; p = p->next, ++i)
+	{
+		cout << setw(3) << i << setw(8);
+		printString(p->info.TENMH);
+		cout << setw(10);
+		printString(p->info.MAMH);
+		cout << endl;
+	}
+}
+
 //------Quest tree proccessing------
 
 PTRQ search(PTRQ root, int id)
@@ -430,11 +473,21 @@ void createAVLTree(PTRQ &root)
 	
 }
 //------Others------
+void printString(char *x)
+{
+	int i = 0;
+	if(x == NULL)
+		return;
+	while(i < strlen(x))
+	{
+		cout << x[i++];
+	}
+}
 char NhapChuoi(char *x)
 {
 	char c;
 	int i = 0;
-	//cout << "Nhap ten lop " << count + 1 << ": ";
+//	cout << "Nhap ten lop " << count + 1 << ": ";
 	while(1)
 	{
 		c = getch();
@@ -487,7 +540,7 @@ void saveWork(dslop ds, char *filename, PTRMH FirstMH)
 	{
 		ofs << ds.lop[i].TENLOP << endl;
 		ofs << ds.lop[i].MALOP << endl;
-		ofs << countStudent(ds.lop[i].Firstsv);
+		ofs << countStudent(ds.lop[i].Firstsv) << endl;
 		for(p = ds.lop[i].Firstsv; p != NULL; p=p->next)
 		{
 			ofs << p->info.MASV << ",";
@@ -495,31 +548,34 @@ void saveWork(dslop ds, char *filename, PTRMH FirstMH)
 			ofs << p->info.HO << ",";
 			ofs << p->info.TEN << ",";
 			ofs << p->info.PHAI << ",";
-			ofs << countMark(p->Firstdiem);
+			ofs << countMark(p->Firstdiem) << ",";
 			for(q = p->Firstdiem; q != NULL; q=q->next)
 			{
 				ofs << q->info.Mamh << ",";
 				if(q->next == NULL)
-					ofs << q->info.mark << endl;
+					ofs << q->info.mark << "." << endl;
 				else
 					ofs << q->info.mark << ",";
 			}
 		}
 	}
-	ofs << countSubject(FirstMH);
+	ofs << countSubject(FirstMH) << endl;
 	for(s = FirstMH; s != NULL; s = s->next)
 	{
 		ofs << s->info.TENMH << ",";
 		ofs << s->info.MAMH << endl;
 	}
+	ofs.close();
 }
 
 void loadWork(dslop &ds, char *filename, PTRMH &FirstMH)
 {
 	ifstream ifs;
-	PTRSV p;
-	PTRD q;
-	PTRMH s;
+	PTRSV p, pr;
+	PTRD q, qr;
+	PTRMH s, sr;
+//	sinhvien x;
+	
 	int i, j, k, maxsv, maxdiem, maxmh;
 	char buffer[100];
 	ifs.open(filename, ios_base::in);
@@ -529,13 +585,16 @@ void loadWork(dslop &ds, char *filename, PTRMH &FirstMH)
 		Sleep(3000);
 		return;
 	}
-	ifs >> ds.n;
+	ifs.getline(buffer, 100, '\n');
+	ds.n = atoi(buffer);
+//	ifs >> ds.n;
 	for(i = 0; i < ds.n; ++i)
 	{
-		ifs >> ds.lop[i].TENLOP;
-		ifs >> ds.lop[i].MALOP;
-		ifs >> maxsv;
-		for(p = ds.lop[i].Firstsv, j = 0; j < maxsv; p = p->next, ++j)
+		ifs.getline(ds.lop[i].TENLOP, 100, '\n');
+		ifs.getline(ds.lop[i].MALOP, 11, '\n');
+		ifs.getline(buffer, 100, '\n');
+		maxsv = atoi(buffer);
+		for(j = 0; j < maxsv; ++j)
 		{
 			p = new nodesv;
 			ifs.getline(p->info.MASV, 11, ',');
@@ -545,21 +604,57 @@ void loadWork(dslop &ds, char *filename, PTRMH &FirstMH)
 			ifs.getline(p->info.PHAI, 5, ',');
 			ifs.getline(buffer, 100, ',');
 			maxdiem = atoi(buffer);
-			for(q = p->Firstdiem, k = 0; k < maxdiem; q = q->next, ++k)
+			for(k = 0; k < maxdiem; ++k)
 			{
 				q = new nodediem;
 				ifs.getline(q->info.Mamh, 9, ',');
+				if(k == maxdiem - 1)
+				{
+					ifs.getline(buffer, 100, '\n');
+					q->info.mark = atoi(buffer);
+					for(qr = p->Firstdiem; qr->next != NULL; qr = qr->next);
+					qr->next = q;
+					q->next = NULL;
+					break;
+				}
 				ifs.getline(buffer, 100, ',');
 				q->info.mark = atoi(buffer);
+				if(k == 0)
+					p->Firstdiem = q;
+				else
+				{
+					for(qr = p->Firstdiem; qr->next != NULL; qr = qr->next);
+					qr->next = q;
+				}
+				q->next = NULL;
 			}
+			if(j == 0)
+				ds.lop[i].Firstsv = p;
+			else
+			{
+				for(pr = ds.lop[i].Firstsv; pr->next != NULL; pr = pr->next);
+				pr->next = p;
+			}
+			p->next = NULL;
 		}
 	}
-	ifs >> maxmh;
-	for(s = FirstMH, i = 0; i < maxmh; s = s->next, ++i)
+	ifs.getline(buffer, 100, '\n');
+	maxmh = atoi(buffer);
+	for(i = 0; i < maxmh; ++i)
 	{
+		s = new nodeMH;
 		ifs.getline(s->info.TENMH, 50, ',');
-		ifs >> s->info.MAMH;
+		ifs.getline(s->info.MAMH, 7, '\n');
+		if(i == 0)
+			FirstMH = s;
+		else
+		{
+			for(sr = FirstMH; sr->next != NULL; sr = sr->next);
+			sr->next = s;
+		}
+		s->next = NULL;
 	}
+	ifs.close();
 }
 
 //------Class List Proccessing-------
@@ -656,6 +751,7 @@ void clearList(PTRSV &First)
 	while(First != NULL)
 	{
 		p = First;
+		clearList(First->Firstdiem);
 		First = First->next;
 		delete p;
 	}
@@ -680,7 +776,11 @@ void clearList(PTRMH &First)
 		delete p;
 	}
 }
-void clearList(dslop &lop)
+void clearList(dslop &ds)
 {
-	delete lop.lop;
+	for(int i = 0; i < ds.n; ++i)
+	{
+		clearList(ds.lop[i].Firstsv);
+	}
+	delete ds.lop;
 }

@@ -19,12 +19,16 @@ int main()
 //		cout << "Nhap mat khau: ";
 //		cin >> pass;
 //	}while(ID == "" || pass == "");char c;
-	dslop d;
-	d.n = 10;
-	d.lop = new Lop[d.n];
-	Themlop(d);
-	PrintClassList(d);
-	delete(d.lop);
+	dslop ds;
+	ds.n = 3;
+	ds.lop = new Lop[ds.n];
+	PTRMH dsmh;
+	loadWork(ds, "D15CQPU01.txt", dsmh);
+//	printStudentList(ds.lop[0].Firstsv);
+	printSubjectList(dsmh);
+//	Themlop(ds);
+//	PrintClassList(ds);
+	clearList(ds);
 	system("pause");
 	return 0;
 }
