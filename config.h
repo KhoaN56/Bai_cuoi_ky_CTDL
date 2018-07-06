@@ -6,6 +6,7 @@
 #define COMPLETE 1
 #define UNDONE 0
 #define MAXLOP 100
+#define STACKSIZE 500
 
 using namespace std;
 
@@ -74,7 +75,7 @@ struct cauhoi
 	string B;
 	string C;
 	string D;
-	char dapan;
+	char dapan[1];
 };
 
 struct nodecauhoi

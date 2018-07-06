@@ -28,13 +28,20 @@ int countSubject(PTRMH FirstMH);
 void insertFirst(PTRMH &First, monhoc x);
 void insertAfter(PTRMH p, monhoc x);
 PTRMH searchMaMH(PTRMH First, char *mamh);
-//------Quest tree proccessing------
+//------Quest tree proccessing (AVL tree)------
 PTRQ search(PTRQ root, int id);
+PTRQ rotateLeft(PTRQ root);
+PTRQ rotateRight(PTRQ ya);
+void insertAVLTree(PTRQ &pavltree, int x, cauhoi a);
 //------Display Result------
 void printString(char *x);
 void printStudentList(PTRSV First);
 void printSubjectList(PTRMH First);
 void PrintClassList(dslop ds);
+//------Others------
+void stoc(string s, char *c);
+void ctos(char *c, string &s);
+char NhapChuoi(char *x);
 //------Save file------
 void saveClassList(dslop ds, char *filename);
 void saveStudentList(Lop Class, char *filename);
@@ -467,12 +474,355 @@ PTRQ search(PTRQ root, int id)
 	return p;
 }
 
+PTRQ rotateLeft(PTRQ root)
+{
+	PTRQ p;
+	if(root == NULL)
+	{
+		cout << "Cay rong!" << endl;
+		Sleep(2000);
+		return 0;
+	}
+	else
+	{
+		if(root->right == NULL)
+		{
+			cout << "Khong the xoay trai vi cay khong co nut con ben phai!!" << endl;
+			Sleep(3000);
+		}
+		else
+		{
+			p = root->right;
+			root->right = p->left;
+			p->left = root;
+		}
+	}
+	return p;
+}
+
+PTRQ rotateRight(PTRQ ya)
+{
+	PTRQ s;
+	if(ya == NULL)
+	{
+		cout << "Cay rong!!" << endl;
+		Sleep(2000);
+		return 0;
+	}
+	else
+	{
+		if(ya->left == NULL)
+		{
+			cout << "Khong the xoay phai vi cay khong co nut con ben trai!!" << endl;
+			Sleep(3000);
+		}
+		else
+		{
+			s = ya->left;
+			ya->left = s->right;
+			s->right = ya;
+		}
+	}
+	return s;
+}
+
+void insertAVLTree(PTRQ &pavltree, int x, cauhoi a)
+{
+   	PTRQ fp, p, q,    	// fp la nut cha cua p, q la con cua p
+           fya, ya,     	/* ya la nut truoc gan nhat co the mat can bang
+                           	   fya la nut cha cua ya */
+           s;           	// s la nut con cua ya theo huong mat can bang
+   	int imbal;           	/* imbal =  1 neu bi lech ve nhanh trai
+                                 	   	  = -1 neu bi lech ve nhanh phai */
+   	// Khoi dong cac gia tri
+   	fp = NULL;	p = pavltree;
+   	fya = NULL;	ya = p;
+	// tim nut fp, ya va fya, nut moi them vao la nut la con cua nut fp
+   	while(p != NULL)
+   	{
+      	if (x == p->id)  // bi trung khoa
+         	return;
+      	if (x < p->id)
+	 		q = p->left;
+      	else
+         	q = p->right;
+      	if(q != NULL)
+         	if(q->bf != 0) // truong hop chi so can bang cua q la 1 hay -1
+         	{ 
+				fya = p;
+            	ya = q;
+         	}
+      	fp = p;
+      	p = q;
+   	}
+	// Them nut moi (nut la) la con cua nut fp
+	q = new nodecauhoi;	// cap phat vung nho
+	q->id =x;  q->info = a;  q->bf = 0;
+	q->left = NULL;  q->right = NULL;
+    if(x < fp->id)
+    	fp->left = q;
+	else
+    	fp->right = q;
+   	/*Hieu chinh chi so can bang cua tat ca cac nut giua ya va q, neu bi lech
+      ve phia trai thi chi so can bang cua tat ca cac nut giua ya va q deu la
+      1, neu bi lech ve phia phai thi chi so can bang cua tat ca cac nut giua
+      ya va q deu la -1 */
+   	if(x < ya->id)
+      	p = ya->left;
+   	else
+     	p = ya->right;
+   	s = p;     // s la con nut ya
+   	while(p != q)
+   	{ 
+   		if(x < p->id)
+      	{ 
+			p->bf = 1;
+        	p = p->left;
+      	}
+      	else
+      	{  	
+		  	p->bf = -1;
+	 		p = p->right;
+      	}
+   	}
+   	// xac dinh huong lech
+   	if(x < ya->id)
+    	imbal = 1;
+   	else
+    	imbal = -1;
+
+   	if(ya->bf == 0)
+   	{ 
+   		ya->bf = imbal;
+      	return;
+   	}
+   	if(ya->bf != imbal)
+   	{ 
+	   	ya->bf = 0;
+      	return;
+   	}
+
+   	if(s->bf == imbal)   // Truong hop xoay don
+   	{ 
+	   	if(imbal == 1)    // xoay phai 
+        	p = rotateRight(ya);
+      	else              // xoay trai 
+         	p = rotateLeft(ya);
+      	ya->bf = 0;
+     	s->bf = 0;
+   	}
+   	else                 // Truong hop xoay kep
+   	{ 
+	   	if(imbal == 1)    // xoay kep trai-phai 
+     	{
+			ya->left = rotateLeft(s);
+         	p = rotateRight(ya);
+      	}
+      	else              // xoay kep phai-trai - 
+      	{
+		  	ya->right = rotateRight(s);
+	 		p = rotateLeft(ya);
+      	}
+      	if(p->bf == 0)    // truong hop p la nut moi them vao
+     	{
+		 	ya->bf = 0;
+         	s->bf = 0;
+      	}
+      	else
+         	if(p->bf == imbal)
+         	{
+			 	ya->bf = -imbal;
+            	s->bf = 0;
+         	}
+         	else
+         	{ 
+			 	ya->bf = 0;
+            	s->bf = imbal;
+         	}
+      	p->bf = 0;
+   	}
+   	if(fya == NULL)
+      	pavltree = p;
+   	else
+      	if(ya == fya->right)
+         	fya->right = p;
+      	else
+         	fya->left = p;
+}
+
 void createAVLTree(PTRQ &root)
 {
 	int id;
+	cauhoi x;
+	char buffer[100], cf;
+	do
+	{
+		cout << "Nhap id cau hoi: ";
+		cin >> id;
+		if(id != 0)
+		{
+			cout << "Nhap ma mon hoc: ";
+			if(NhapChuoi(x.mamh) == ESC)
+			{
+				cout << "Ban muon ngung nhap cau hoi thi?(y/n) ";
+				cin >> cf;
+				if(cf == 'y')
+					return;
+				else
+					continue;
+			}
+			cout << "Nhap noi dung cau hoi: ";
+			if(NhapChuoi(buffer) == ESC)
+			{
+				cout << "Ban muon ngung nhap cau hoi thi?(y/n) ";
+				cin >> cf;
+				if(cf == 'y')
+					return;
+				else
+					continue;
+			}
+			else
+				ctos(buffer, x.noidung);
+			cout << "Nhap noi dung lua chon A: ";
+			if(NhapChuoi(buffer) == ESC)
+			{
+				cout << "Ban muon ngung nhap cau hoi thi?(y/n) ";
+				cin >> cf;
+				if(cf == 'y')
+					return;
+				else
+					continue;
+			}
+			else
+				ctos(buffer, x.A);
+			cout << "Nhap noi dung lua chon B: ";
+			if(NhapChuoi(buffer) == ESC)
+			{
+				cout << "Ban muon ngung nhap cau hoi thi?(y/n) ";
+				cin >> cf;
+				if(cf == 'y')
+					return;
+				else
+					continue;
+			}
+			else
+				ctos(buffer, x.B);
+				cout << "Nhap noi dung lua chon C: ";
+			if(NhapChuoi(buffer) == ESC)
+			{
+				cout << "Ban muon ngung nhap cau hoi thi?(y/n) ";
+				cin >> cf;
+				if(cf == 'y')
+					return;
+				else
+					continue;
+			}
+			else
+				ctos(buffer, x.C);
+				cout << "Nhap noi dung lua chon D: ";
+			if(NhapChuoi(buffer) == ESC)
+			{
+				cout << "Ban muon ngung nhap cau hoi thi?(y/n) ";
+				cin >> cf;
+				if(cf == 'y')
+					return;
+				else
+					continue;
+			}
+			else
+				ctos(buffer, x.D);
+			cout << "Nhap dap an: ";
+			if(NhapChuoi(x.dapan) == ESC)
+			{
+				cout << "Ban muon ngung nhap cau hoi thi?(y/n) ";
+				cin >> cf;
+				if(cf == 'y')
+					return;
+				else
+					continue;
+			}
+			if(root == NULL)
+			{
+				root = new nodecauhoi;
+				root->bf = 0;	root->info = x;
+				root->id = id;
+				root->left = NULL;	root->right = NULL;
+			}
+			else
+				insertAVLTree(root, id, x);
+		}
+	}while(id != 0);
+}
+
+void removeCase3(PTRQ &r, int x, PTRQ rp)
+{
+	if(r->left != NULL)
+		removeCase3(r->left, x, rp);
+	else
+	{
+		rp->id = r->id;
+//		rp->bf = r->bf;
+		rp->info = r->info;
+		rp = r;
+		r = rp->right;
+	}	
+}
+
+void removeAVL(PTRQ &p, int x)
+{
+	if(p == NULL)
+	{
+		cout << "Khong the xoa nut rong!!";
+		Sleep(2000);
+		return;
+	}
+	else
+	{
+		if(x < p->id)
+		{
+			removeAVL(p->left, x);
+		}
+		else if(x > p->id)
+		{
+			removeAVL(p->right, x);
+		}
+		else
+		{
+			PTRQ rp;
+			rp = p;
+			if(rp->right == NULL)	p = rp->left;
+			else if(rp->left == NULL)	p = rp->right;
+			else
+				removeCase3(rp->right, x, rp);
+			delete rp;
+		}
+		
+	}
+	//Toi day thi p->id = x va p = q
+	
 	
 }
+
 //------Others------
+
+void ctos(char *c, string &s)
+{
+	int i = 0;
+	while(i < strlen(c))
+	{
+		s[i] = c[i];
+	}
+}
+
+void stoc(string s, char *c)
+{
+	int i = 0;
+	while(i < s.length())
+	{
+		c[i] = s[i];
+	}
+}
+
 void printString(char *x)
 {
 	int i = 0;
