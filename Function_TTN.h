@@ -29,10 +29,15 @@ void insertFirst(PTRMH &First, monhoc x);
 void insertAfter(PTRMH p, monhoc x);
 PTRMH searchMaMH(PTRMH First, char *mamh);
 //------Quest tree proccessing (AVL tree)------
+int nodeHeight(PTRQ p);
 PTRQ search(PTRQ root, int id);
 PTRQ rotateLeft(PTRQ root);
 PTRQ rotateRight(PTRQ ya);
 void insertAVLTree(PTRQ &pavltree, int x, cauhoi a);
+void balanceLeft(PTRQ &root, int lh);
+void balanceRight(PTRQ &root, int rh);
+void removeAVL(PTRQ &root, int x);
+void removeCase3(PTRQ &r, int x, PTRQ &rp);
 //------Display Result------
 void printString(char *x);
 void printStudentList(PTRSV First);
@@ -836,6 +841,7 @@ void removeAVL(PTRQ &root, int x)
 			ah = nodeHeight(root->left);
 			if(ah < bh)
 				balanceLeft(root, ah);
+			root->bf = nodeHeight(root->left) - nodeHeight(root->right);		//cap nhat he so can bang cua node
 			//code can bang cay con nhanh trai neu chieu cao cua no bi giam
 		}
 		else if(x > root->id)
@@ -845,21 +851,24 @@ void removeAVL(PTRQ &root, int x)
 			ah = nodeHeight(root->right);
 			if(ah < bh)
 				balanceRight(root, ah);
+			root->bf = nodeHeight(root->left) - nodeHeight(root->right);		//cap nhat he so can bang cua node
 			//code can bang cay con nhanh phai neu chieu cao cua no bi giam
 		}
-		else
+		else		//x = root->id
 		{
 			PTRQ rp;
 			rp = root;
-			if(rp->right == NULL)	root = rp->left;		//p la nut la hoac la nut chi co cay con ben trai
-			else if(rp->left == NULL)	root = rp->right;	//p chi co cay con ben phai
+			if(rp->right == NULL)	root = rp->left;		//root la nut la hoac la nut chi co cay con ben trai
+			else if(rp->left == NULL)	root = rp->right;	//root chi co cay con ben phai
 			else
-				removeCase3(rp->right, x, rp);			//p co 2 cay con
+			{
+				removeCase3(rp->right, x, rp);			//root co 2 cay con
+				removeAVL(root->right, root->id);		/*Chay vao kiem tra lai phan node 
+														cuc trai bi xoa thay the de can bang lai*/
+			}
 			delete rp;
 		}
-		
 	}
-	
 }
 
 //------Others------
