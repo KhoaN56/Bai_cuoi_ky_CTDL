@@ -41,7 +41,7 @@ void PrintClassList(dslop ds);
 //------Others------
 void stoc(string s, char *c);
 void ctos(char *c, string &s);
-char NhapChuoi(char *x);
+int NhapChuoi(char *x);
 //------Save file------
 void saveClassList(dslop ds, char *filename);
 void saveStudentList(Lop Class, char *filename);
@@ -448,6 +448,12 @@ int countSubject(PTRMH FirstMH)
 
 void printSubjectList(PTRMH First)
 {
+	if(First == NULL)
+	{
+		cout << "Danh sach rong!!" << endl;
+		Sleep(1500);
+		return;
+	}
 	PTRMH p;
 	int i = 1;
 	cout << setw(4) << "STT" << setw(20) << "Ten mon hoc" << setw(15) << "Ma mon hoc" << endl;
@@ -463,6 +469,13 @@ void printSubjectList(PTRMH First)
 
 //------Quest tree proccessing------
 
+int nodeHeight(PTRQ p)
+{
+	if(p == NULL)
+		return 0;
+	return max(nodeHeight(p->left), nodeHeight(p->right)) + 1;
+}
+
 PTRQ search(PTRQ root, int id)
 {
 	PTRQ p = root;
@@ -471,6 +484,11 @@ PTRQ search(PTRQ root, int id)
 			p = p->left;
 		else
 			p = p->right;
+	if(p == NULL)
+	{
+		cout << "Khong tim thay cau hoi co id = " << id << "!" << endl;
+		Sleep(2000);
+	}
 	return p;
 }
 
@@ -654,7 +672,7 @@ void createAVLTree(PTRQ &root)
 {
 	int id;
 	cauhoi x;
-	char buffer[100], cf;
+	char buffer[2000], cf;
 	do
 	{
 		cout << "Nhap id cau hoi: ";
@@ -683,6 +701,7 @@ void createAVLTree(PTRQ &root)
 			}
 			else
 				ctos(buffer, x.noidung);
+			memset(buffer, '\0', 2000);
 			cout << "Nhap noi dung lua chon A: ";
 			if(NhapChuoi(buffer) == ESC)
 			{
@@ -754,7 +773,7 @@ void createAVLTree(PTRQ &root)
 	}while(id != 0);
 }
 
-void removeCase3(PTRQ &r, int x, PTRQ rp)
+void removeCase3(PTRQ &r, int x, PTRQ &rp)
 {
 	if(r->left != NULL)
 		removeCase3(r->left, x, rp);
@@ -768,9 +787,41 @@ void removeCase3(PTRQ &r, int x, PTRQ rp)
 	}	
 }
 
-void removeAVL(PTRQ &p, int x)
+void balanceLeft(PTRQ &root, int lh)
 {
-	if(p == NULL)
+	int rh = nodeHeight(root->right);
+	if (abs(lh - rh) > 1)		//Cay mat can bang
+	{
+		if(root->right->bf == root->bf)		//Lech phai phai
+			root = rotateLeft(root->right);
+		else					//Lech phai trai
+		{
+			root->right = rotateRight(root->right);
+			root = rotateLeft(root->right);
+		}
+	}
+	
+}
+
+void balanceRight(PTRQ &root, int rh)
+{
+	int lh = nodeHeight(root->left);
+	if (abs(lh - rh) > 1)		//Cay mat can bang
+	{
+		if(root->left->bf == root->bf)		//Lech trai trai
+			root = rotateRight(root->left);
+		else					//Lech trai phai
+		{
+			root->left = rotateLeft(root->left);
+			root = rotateRight(root->left);
+		}
+	}
+	
+}
+
+void removeAVL(PTRQ &root, int x)
+{
+	if(root == NULL)
 	{
 		cout << "Khong the xoa nut rong!!";
 		Sleep(2000);
@@ -778,28 +829,36 @@ void removeAVL(PTRQ &p, int x)
 	}
 	else
 	{
-		if(x < p->id)
+		if(x < root->id)
 		{
-			removeAVL(p->left, x);
+			int ah, bh = nodeHeight(root->left);		//bh la chieu cao truoc khi xoa node
+			removeAVL(root->left, x);			//ah la chieu cao sau khi xoa node
+			ah = nodeHeight(root->left);
+			if(ah < bh)
+				balanceLeft(root, ah);
+			//code can bang cay con nhanh trai neu chieu cao cua no bi giam
 		}
-		else if(x > p->id)
+		else if(x > root->id)
 		{
-			removeAVL(p->right, x);
+			int ah, bh = nodeHeight(root->right);
+			removeAVL(root->right, x);
+			ah = nodeHeight(root->right);
+			if(ah < bh)
+				balanceRight(root, ah);
+			//code can bang cay con nhanh phai neu chieu cao cua no bi giam
 		}
 		else
 		{
 			PTRQ rp;
-			rp = p;
-			if(rp->right == NULL)	p = rp->left;
-			else if(rp->left == NULL)	p = rp->right;
+			rp = root;
+			if(rp->right == NULL)	root = rp->left;		//p la nut la hoac la nut chi co cay con ben trai
+			else if(rp->left == NULL)	root = rp->right;	//p chi co cay con ben phai
 			else
-				removeCase3(rp->right, x, rp);
+				removeCase3(rp->right, x, rp);			//p co 2 cay con
 			delete rp;
 		}
 		
 	}
-	//Toi day thi p->id = x va p = q
-	
 	
 }
 
@@ -833,7 +892,7 @@ void printString(char *x)
 		cout << x[i++];
 	}
 }
-char NhapChuoi(char *x)
+int NhapChuoi(char *x)
 {
 	char c;
 	int i = 0;
@@ -845,7 +904,7 @@ char NhapChuoi(char *x)
 		else if (c == ESC)
 		{
 			x = "";
-			break;
+			return ESC;
 		}
 		else if (c == ENTER)
 		{
@@ -853,7 +912,7 @@ char NhapChuoi(char *x)
 				return ESC;
 			x[i] = '\0';
 			cout << endl;
-			break;
+			return ENTER;
 		}
 		else if (c == BSPACE)
 		{
@@ -869,7 +928,6 @@ char NhapChuoi(char *x)
 		x[i] = c;
 		++i;
 	}
-	return c;
 }
 
 void saveWork(dslop ds, char *filename, PTRMH FirstMH)

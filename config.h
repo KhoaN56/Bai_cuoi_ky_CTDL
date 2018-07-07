@@ -7,9 +7,7 @@
 #define UNDONE 0
 #define MAXLOP 100
 #define STACKSIZE 500
-
 using namespace std;
-
 
 const int SPACE = 32;
 const int ENTER = 13;
@@ -80,7 +78,7 @@ struct cauhoi
 
 struct nodecauhoi
 {
-	int id;
+	int id;		//khoa
 	int bf;
 	cauhoi info;
 	struct nodecauhoi *left, *right;
