@@ -21,7 +21,7 @@ int emptyList(PTRD First);
 int countMark(PTRD First);
 void insertFirst(PTRD &First, diem x);
 void insertAfter(PTRD p, diem x);
-PTRD searchMark(PTRD First, monhoc MH);
+PTRD searchMark(PTRD &First, monhoc &MH);
 //------Subject Proccessing------
 int emptyList(PTRMH First);
 int countSubject(PTRMH FirstMH);
@@ -42,11 +42,14 @@ void removeCase3(PTRQ &r, int x, PTRQ &rp);
 void printString(char *x);
 void printStudentList(PTRSV First);
 void printSubjectList(PTRMH First);
-void PrintClassList(dslop ds);
+void printClassList(dslop ds);
+void printMarkSubject(Lop &Class, monhoc &MH);
 //------Others------
+void viethoa(char *x);
 void stoc(string s, char *c);
 void ctos(char *c, string &s);
 int NhapChuoi(char *x);
+int MenuDong(char td [][50]);
 //------Save file------
 void saveClassList(dslop ds, char *filename);
 void saveStudentList(Lop Class, char *filename);
@@ -56,13 +59,12 @@ void saveWork(dslop ds, char *filename, PTRMH FirstMH);
 void loadClassList(dslop &ds, char *filename);
 void loadStudentList(Lop &Class, char *filename);
 void loadMarkList(Lop Class, monhoc MH, char *filename);
-void loadWork(dslop &ds, char *filename, PTRMH &FirstMH);
+void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root);
 //------Clear Lists------
 void clearList(PTRSV &First);
 void clearList(PTRD &First);
 void clearList(PTRMH &First);
 void clearList(dslop &ds);
-
 
 
 int Full_List(dslop ds)
@@ -379,7 +381,7 @@ void loadMarkList(Lop Class, monhoc MH, char *filename)
 	ifs.close();
 }
 
-PTRD searchMark(PTRD First, monhoc MH)
+PTRD searchMark(PTRD &First, monhoc &MH)
 {
 	for(PTRD p = First; p != NULL; p = p->next)
 		if(strcmp(p->info.Mamh, MH.MAMH) == 0)
@@ -399,6 +401,35 @@ int countMark(PTRD First)
 	}
 	for(p = First; p !=NULL ; p = p->next, ++i);
 	return i;
+}
+
+void printMarkSubject(Lop &Class, monhoc &MH)
+{
+	if(Class.Firstsv == NULL)
+	{
+		cout << "Danh sach sinh vien rong!!" << endl;
+		Sleep(2000);
+		return;
+	}
+	int i = 1;
+	PTRD q;
+	PTRSV p;
+	cout << "\t\t\t\tDANH SACH DIEM THI MON " << MH.TENMH << " LOP " << Class.MALOP << endl << endl;
+	cout << setw(4) << "STT" << setw(20) << "Ho va ten" << setw(15) << "Ma sinh vien" << setw(10) << "Diem thi" << endl;
+	for(p = Class.Firstsv; p != NULL; p = p->next)
+	{
+		cout << setw(3) << i << setw(5);
+		printString(p->info.HO);
+		cout << " ";
+		printString(p->info.TEN);
+		cout << "\t";
+		printString(p->info.MASV);
+		q = searchMark(p->Firstdiem, MH);
+		if(q == NULL)
+			cout << "\tChua thi" << endl;
+		else
+			cout << "\t" << q->info.mark << endl;
+	}
 }
 
 //------Subject Proccessing------
@@ -873,6 +904,28 @@ void removeAVL(PTRQ &root, int x)
 
 //------Others------
 
+int c_a_r(char td [][50])
+{
+	int i;
+	for(i = 0; td[i][0] != NULL; ++i);
+	return i;
+}
+
+void viethoa(char *x)
+{
+	char a;
+	for (int i = 0; i < strlen(x); ++i)
+	{
+		a = x[i];
+		if (a >= 97 && a <= 122)
+		{
+			x[i] = a - 32;
+		}
+		else
+			x[i] = a;
+	}
+}
+
 void ctos(char *c, string &s)
 {
 	int i = 0;
@@ -901,6 +954,7 @@ void printString(char *x)
 		cout << x[i++];
 	}
 }
+
 int NhapChuoi(char *x)
 {
 	char c;
@@ -985,16 +1039,17 @@ void saveWork(dslop ds, char *filename, PTRMH FirstMH)
 	ofs.close();
 }
 
-void loadWork(dslop &ds, char *filename, PTRMH &FirstMH)
+void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root)
 {
 	ifstream ifs;
 	PTRSV p, pr;
 	PTRD q, qr;
 	PTRMH s, sr;
+	cauhoi quest;
 //	sinhvien x;
 	
-	int i, j, k, maxsv, maxdiem, maxmh;
-	char buffer[100];
+	int i, j, k, maxsv, maxdiem, maxmh, maxq, id;
+	char buffer[2000];
 	ifs.open(filename, ios_base::in);
 	if(ifs.fail() == true)
 	{
@@ -1071,7 +1126,418 @@ void loadWork(dslop &ds, char *filename, PTRMH &FirstMH)
 		}
 		s->next = NULL;
 	}
+	ifs.getline(buffer, 100, '\n');
+	maxq = atoi(buffer);
+	for(i = 0; i < maxq; ++i)
+	{
+		ifs.getline(buffer, 100, '\n');
+		id = atoi(buffer);
+		ifs.getline(quest.mamh, 100, '\n');
+		ifs.getline(buffer, 2000, '\n');
+		quest.noidung = buffer;
+		ifs.getline(buffer, 2000, '\n');
+		quest.A = buffer;
+		ifs.getline(buffer, 2000, '\n');
+		quest.B = buffer;
+		ifs.getline(buffer, 2000, '\n');
+		quest.C = buffer;
+		ifs.getline(buffer, 2000, '\n');
+		quest.D = buffer;
+		ifs.getline(quest.dapan, 100, '\n');
+		if(i == 0)
+		{
+			root = new nodecauhoi;
+			root->id = id;
+			root->bf = 0;
+			root->info = quest;
+			root->left = NULL;
+			root->right = NULL;
+		}
+		else
+		{
+			insertAVLTree(root, id, quest);
+		}
+	}
 	ifs.close();
+}
+
+void Normal () {
+	SetColor(WHITE);
+	SetBGColor(0);
+}
+
+void HighLight () {
+	SetColor(15);
+	SetBGColor(1);
+}
+
+int MenuDong(char td [][50]) {
+	Normal();
+	system("cls");
+	cout << "\t\t==============Image proccessing==============";
+	int chon =0, so_item;
+	int i;
+	so_item = c_a_r(td);
+	for ( i=0; i< so_item ; i++) {
+		gotoxy(cot, dong +i);
+		cout << td[i];
+	}
+	HighLight();
+	gotoxy(cot,dong+chon);
+	cout << td[chon];
+	char kytu;
+	do {
+		kytu = getch();
+		if (kytu == 0) kytu = getch();
+		switch (kytu) {
+			case Up :
+				if (chon+1 >1) {
+					Normal();
+					gotoxy(cot,dong+chon);
+					cout << td[chon];
+					chon --;
+					HighLight();
+					gotoxy(cot,dong+chon);
+					cout << td[chon];
+
+				}
+				break;
+			case Down :
+				if (chon + 1 <so_item) {
+					Normal();
+					gotoxy(cot,dong+chon);
+					cout << td[chon];
+					chon ++;
+					HighLight();
+					gotoxy(cot,dong+chon);
+					cout << td[chon];
+				}
+				break;
+			case 13 :
+				return chon+1;
+			case 27:
+				system("cls");
+				return 0;
+		}  // end switch
+	} while (1);
+}
+
+void BaoLoi(char *S){
+	int x = wherex(), y = wherey();
+	int x1 = wherex(), y1 = wherey() + 5;
+	gotoxy(40, y1);
+	cout<<S;
+	Sleep(2000);
+	gotoxy(40, y1);
+	cout <<"                                                                ";
+	gotoxy(x + 1, y + 1);
+}
+
+int NhapMa(char *x, int n_max)
+{
+	char c;
+	int i = 0;
+	int x1 = 0,y1 = 0, x2 = 0,y2 = 0;
+	char answer;
+	while(1)
+	{
+		c = getch();
+		if (c == ESC)
+		{
+			x = "";			
+			return ESC;
+		}
+		else if (c == ENTER)
+		{
+			if (i == 0){
+				cout << "Ban chua nhap chuoi, moi nhap lai!!" << endl;
+				Sleep(2000);
+				continue;
+			}
+			x[i] = '\0';
+			cout << endl;
+			return ENTER;
+		}
+		else if (c == BSPACE)
+		{
+			if (i == 0)	continue;
+			else 
+			{
+				--i;
+				cout << c << " " << c;
+				x[i] = NULL;
+				continue;
+			}
+		}
+		else if (c == SPACE){
+			BaoLoi("Chuoi can nhap khong duoc chua khoang trang. Xin kiem tra lai");
+			continue;		
+		}
+		else if (i == n_max){
+			x1 = wherex();	y1 = wherey();
+			x2 = wherex() + 5;	y2 = wherey() + 5;
+			gotoxy(x2, y2);
+			cout<<"Chuoi can nhap chi chua toi da " << n_max << " ki tu";
+			Sleep(1500);
+			gotoxy(x2, y2);
+			cout <<"                                                                ";
+			gotoxy(x1 + 1, y1 + 1);
+			continue;
+		}
+		else if (c < 0){
+			c = getch();
+			if (c >= 0)
+				continue;
+		}
+		else 
+		{
+			if ((c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122))// nhap chu, so
+				x[i] = c;
+			else 
+			{
+				BaoLoi("Chuoi chi chua chu hoac so. Xin kiem tra lai!");
+				continue;			
+			}
+		}
+		if(c != 0){
+		x[i] = c;
+		cout << x[i];
+		}
+		++i;
+	}
+}
+
+int NhapChuoi(char *x, int n_max)
+{
+	char c;
+	int i = 0;
+	int x1 = 0,y1 = 0, x2 = 0,y2 = 0;
+	while(1)
+	{
+		c = getch();
+		if (c == ESC)
+		{
+			x = "";
+			return ESC;
+		}
+		else if (c == ENTER)
+		{
+			if (i == 0)
+			{
+				BaoLoi("Ban chua nhap chuoi, moi nhap lai!!");
+				continue;
+			}
+			x[i] = '\0';
+			cout << endl;
+			return ENTER;
+		}
+		else if (c == BSPACE)
+		{
+			if (i == 0)	continue;
+			else 
+			{
+				--i;
+				cout << c << " " << c;
+				x[i] = NULL;
+				continue;
+			}
+		}
+		else if (i == n_max){
+			x1 = wherex();	y1 = wherey();
+			x2 = wherex()+5;	y2 = wherey()+5;
+			gotoxy(x2,y2);
+			cout<<"Chuoi can nhap chi chua toi da " << n_max << " ki tu";
+			Sleep(1500);
+			gotoxy(x2, y2);
+			cout <<"                                                                ";
+			gotoxy(x1 + 1, y1 + 1);
+			continue;
+		}
+		else if (i == 0 && c == SPACE)
+		{
+			BaoLoi("Ki tu dau tien khong duoc la khoang trang. Xin kiem tra lai!");
+			continue;
+		}
+		else if (c < 0){
+			c = getch();
+			if(c >= 0)
+			continue;
+		}
+		else 
+		{
+			if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122) || c == SPACE)// nhap chu
+				x[i] = c;
+			else 
+			{
+				BaoLoi("Chuoi chi chua chu cai va dau cach. Xin kiem tra lai!");
+				continue;			
+			}
+		}
+		if (c != 0)
+			cout<< x[i];
+		++i;
+	}
+}
+
+int NhapPass( char *x, int n_max){
+	char c;
+	int i = 0;
+	int x1 = 0,y1 = 0, x2 = 0,y2 = 0;
+	while(1)
+	{
+		c = getch();
+		if (c == ESC)
+		{
+			x = "";
+			break;
+		}
+	
+		else if (c == ENTER)
+		{
+			if (i == 0){
+				BaoLoi("Muc nay khong duoc de trong. Xin kiem tra lai");
+				continue;
+			}
+			x[i] = '\0';
+			cout << endl;
+			break;
+		}
+		else if (c == BSPACE)
+		{
+			if (i == 0)	continue;
+			else 
+			{
+				--i;
+				cout << c << " " << c;
+				x[i] = NULL;
+				continue;
+			}
+		}
+		else if (c == SPACE){
+			BaoLoi("Mat khau khong duoc chua khoang trang. Xin kiem tra lai!");
+			continue;		
+		}
+		else if (i==n_max){
+			x1=wherex();	y1=wherey();
+			x2=wherex()+5;	y2=wherey()+5;
+			gotoxy(x2,y2);
+			cout<<"Chuoi can nhap chi chua toi da " << n_max << " ki tu";
+			Sleep(2000);
+			gotoxy(x2,y2);
+			cout <<"                                                                ";
+			gotoxy(x1 + 1, y1 + 1);
+			continue;
+		}
+		else if (c < 0)
+		{
+			c = getch();
+			if(c >= 0)
+				continue;
+		}
+		else 
+		{
+			if (c >= 33 && c <= 126)// nhap chu, so, ki tu dac biet
+				x[i] = c;
+			else 
+			{
+				BaoLoi("Chuoi chi chua chu hoac so. Xin kiem tra lai!");	
+				continue;			
+			}
+		}
+		if(c != 0)
+		{
+			x[i] = c;
+			cout<<"*";
+		}
+		++i;
+	}
+}
+
+int DangNhap(dslop DSlop)
+{
+	char *ID = new char [10];
+	char *pass = new char [8];
+	int i = 0;
+	PTRSV p;
+	while(1)
+	{
+		system("cls");
+		cout<<"=======================DANG NHAP======================="<<endl;
+		cout<<"Ten dang nhap: ";
+		i = NhapMa(ID, 10);
+		if(i == ESC)
+		{
+			xoadong(2, 2);
+			cout << "Ban co muon thoat chuong trinh khong?(y/n) ";
+			i = NhapMa(ID, 2);
+			if(i == ESC || ID[0] == 'n' || ID[0] == 'N')
+				continue;
+			else if(ID[0] == 'y' || ID[0] == 'Y')
+				return 0;
+		}
+		else if(i == ENTER)
+		{
+			if(strlen(ID) == 0)
+			{
+				cout << "Ban chua nhap ID! Moi nhap lai!" << endl;
+				Sleep(2000);
+				continue;
+			}
+			
+		}
+		cout<<"Nhap mat khau: ";
+		i = NhapPass(pass, 8);
+		if(i == ESC)
+		{
+			xoadong(2, 2);
+			cout << "Ban co muon thoat chuong trinh khong?(y/n) ";
+			i = NhapMa(ID, 2);
+			if(i == ESC || ID[0] == 'n' || ID[0] == 'N')
+				return 0;
+			else if(ID[0] == 'y' || ID[0] == 'Y')
+				break;
+		}
+		if(strcmp(ID, "GV") == 0 || strcmp(ID, "gv") == 0)
+		{
+			if(strcmp(pass, "GV") == 0 || strcmp(pass, "gv") == 0)
+			{
+				return 2;
+			}
+			else
+			{
+				cout << "Mat khau chua dung, moi nhap lai!!" << endl;
+				Sleep(2000);
+				continue;
+			}
+		}
+		else
+		{
+			for(i = 0; i < DSlop.n; i++)
+			{
+				p = searchStudent(DSlop.lop[i].Firstsv, ID);
+				if(p != NULL)	break;
+			}
+			if(p == NULL)
+			{
+				cout << "ID khong dung, moi nhap lai!!" << endl;
+				Sleep(2000);
+				continue;
+			}
+			else
+				if(strcmp(pass, p->info.password) == 0)
+				{
+					return 1;
+				}
+				else
+				{
+					cout << "Mat khau khong dung! Moi nhap lai!" << endl;
+					Sleep(2000);
+					continue;
+				}
+		}
+	}
+	delete ID;
+	delete pass;
 }
 
 //------Class List Proccessing-------
@@ -1149,7 +1615,7 @@ void loadClassList(dslop &ds, char *filename)
 	ifs.close();
 }
 
-void PrintClassList(dslop ds)
+void printClassList(dslop ds)
 {
 	int x, y;
 	cout << setw(5) << "STT" << setw(20) << "Ten lop" << setw(20) << "Ma lop" << endl;
