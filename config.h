@@ -4,10 +4,13 @@
 #define FALSE 0
 #define EMPTY 0
 #define COMPLETE 1
-#define UNDONE 0
+#define UNDONE 2
+#define CONTINUE 3
+#define BREAK 2
 #define WHITE 15
 #define MAXLOP 100
 #define STACKSIZE 500
+#define MAXCAUTHI 100
 using namespace std;
 
 const int dong = 2;
@@ -45,7 +48,7 @@ struct nodediem
 typedef nodediem *PTRD;
 struct sinhvien
 {
-	char password[32];
+	char password[8];
 	char MASV[11];
 	char HO[51];
 	char TEN[11];
@@ -78,7 +81,7 @@ struct cauhoi
 	string B;
 	string C;
 	string D;
-	char dapan[1];
+	char dapan[2];
 };
 
 struct nodecauhoi
@@ -90,18 +93,47 @@ struct nodecauhoi
 };
 typedef nodecauhoi *PTRQ;
 
-char menuGV [7][50] = {"1. Dieu chinh danh sach lop                      ",
+struct dscauthi
+{
+	int n;
+	int *id;
+};
+
+struct nodedscauthi
+{
+	char MAMH[7];
+	dscauthi info;
+	struct nodedscauthi *next;
+};
+typedef nodedscauthi *PTRCT;
+
+char menuGV [6][50] = {"1. Dieu chinh danh sach lop                      ",
 					   "2. Dieu chinh danh sach sinh vien                ",
 					   "3. Dieu chinh danh sach mon hoc                  ",
 					   "4. Dieu chinh cau hoi thi trac nghiem            ",
-					   "5. Nhap cau hoi thi                              ",
-					   "6. Thi trac nghiem                               ",
-					   "7. Thoat                                         "
+					   "5. Thi trac nghiem                               ",
+					   "6. Thoat                                         "
 					   };
-char menu1_1 [5][50] = {"1. Them lop                                     ",
+char menu1 [5][50] = {"1. Them lop                                     ",
 						"2. Sua lop                                      ",
 						"3. Xoa lop                                      ",
 						"4. Xem danh sach lop                            ",
-						"5. Quay lai menu chinh                          ",
+						"5. Quay lai menu chinh                          "
 					   };
-					   
+char menu2 [5][50] = {"1. Them sinh vien                               ",
+						"2. Sua sinh vien                                ",
+						"3. Xoa sinh vien                                ",
+						"4. Xem danh sach sinh vien                      ",
+						"5. Quay lai menu chinh                          "
+					   };  
+char menu3 [5][50] = {"1. Them mon hoc                                 ",
+						"2. Sua mon hoc                                  ",
+						"3. Xoa mon hoc                                  ",
+						"4. Xem danh sach mon hoc                        ",
+						"5. Quay lai menu chinh                          "
+					   };
+char menu4 [4][50] = {"1. Them cau hoi                                  ",
+					  "2. Sua cau hoi                                   ",
+					  "3. Xoa cau hoi                                   ",
+					  "4. Quay lai menu chinh                           "
+					  };

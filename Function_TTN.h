@@ -4,18 +4,20 @@ using namespace std;
 int Full_List(dslop ds);
 int Empty_List(dslop ds);
 void Themlop(dslop &ds);
+void deleteClass(dslop &ds, Lop Class);
+void moveToLast(dslop &ds, int i);
 //------Student List Proccessing------
 int emptyList(PTRSV First);
 int countStudent(PTRSV First);
 void insertFirst(PTRSV &First, sinhvien x);
-void insertAfter(PTRSV p, sinhvien x, PTRD Firstdiem);
-void insertOrder(PTRSV &First, sinhvien sv, PTRD Firstdiem);
+void insertAfter(PTRSV p, sinhvien x);
+void insertOrder(PTRSV &First, sinhvien sv);
 PTRSV searchStudent(PTRSV First, char *masv);
 void selectionSort(PTRSV &First);
 char *makeString(sinhvien sv);
 int deleteFirst(PTRSV &First);
 int deleteAfter(PTRSV p);
-int deleteStudent(PTRSV &First, sinhvien sv);
+int deleteStudent(PTRSV &First, char *masv);
 //------Mark Proccessing------
 int emptyList(PTRD First);
 int countMark(PTRD First);
@@ -28,6 +30,7 @@ int countSubject(PTRMH FirstMH);
 void insertFirst(PTRMH &First, monhoc x);
 void insertAfter(PTRMH p, monhoc x);
 PTRMH searchMaMH(PTRMH First, char *mamh);
+int deleteSubject(PTRMH &First, char *mamh);
 //------Quest tree proccessing (AVL tree)------
 int nodeHeight(PTRQ p);
 PTRQ search(PTRQ root, int id);
@@ -38,8 +41,13 @@ void balanceLeft(PTRQ &root, int lh);
 void balanceRight(PTRQ &root, int rh);
 void removeAVL(PTRQ &root, int x);
 void removeCase3(PTRQ &r, int x, PTRQ &rp);
+//------List of subject quest proccessing------
+void insertAfter(PTRCT &p, char *mamh);
+void addID(dscauthi &ds, int id);
+void moveOut(dscauthi &ds, int i);
 //------Display Result------
 void printString(char *x);
+void printInfo(PTRSV p);
 void printStudentList(PTRSV First);
 void printSubjectList(PTRMH First);
 void printClassList(dslop ds);
@@ -48,8 +56,12 @@ void printMarkSubject(Lop &Class, monhoc &MH);
 void viethoa(char *x);
 void stoc(string s, char *c);
 void ctos(char *c, string &s);
+int checkEsc ();
 int NhapChuoi(char *x);
 int MenuDong(char td [][50]);
+int NhapMa(char *x, int n_max);
+int NhapChuoi(char *x, int n_max);
+int NhapPass( char *x, int n_max);
 //------Save file------
 void saveClassList(dslop ds, char *filename);
 void saveStudentList(Lop Class, char *filename);
@@ -59,7 +71,7 @@ void saveWork(dslop ds, char *filename, PTRMH FirstMH);
 void loadClassList(dslop &ds, char *filename);
 void loadStudentList(Lop &Class, char *filename);
 void loadMarkList(Lop Class, monhoc MH, char *filename);
-void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root);
+void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root, PTRCT &FirstMT);
 //------Clear Lists------
 void clearList(PTRSV &First);
 void clearList(PTRD &First);
@@ -89,7 +101,7 @@ void insertFirst(PTRSV &First, sinhvien x)
    p->next = First;
    First = p;
 }
-void insertAfter(PTRSV p, sinhvien x, PTRD Firstdiem)
+void insertAfter(PTRSV p, sinhvien x)
 {
    PTRSV q;
    if(p == NULL)
@@ -98,18 +110,16 @@ void insertAfter(PTRSV p, sinhvien x, PTRD Firstdiem)
    {
    		q = new nodesv;
     	q->info = x;
-    	q->Firstdiem = Firstdiem;
     	q->next = p->next;
     	p->next = q;
    }
 }
 
-void insertOrder(PTRSV &First, sinhvien sv, PTRD Firstdiem)
+void insertOrder(PTRSV &First, sinhvien sv)
 {
 	PTRSV after, before, p;
 	p = new nodesv;
 	p->info = sv;
-	p->Firstdiem = Firstdiem;
 	for(after = First; after != NULL && strcmp(makeString(after->info), makeString(sv)) < 0; before = after, after = after->next);
 	if(after == First)
 	{
@@ -186,25 +196,43 @@ int deleteAfter(PTRSV p)
 	return COMPLETE;
 }
 
-int deleteStudent(PTRSV &First, sinhvien sv)
+int deleteStudent(PTRSV &First, char *masv)
 {
 	PTRSV p;
+	char cf;
 	if(First == NULL)
-		return FALSE;
-	if(strcmp(First->info.MASV,sv.MASV) == 0)
 	{
-		p = First;
-		First = p->next;
-		delete p;
-		return COMPLETE;
+		cout << "Danh sach rong!!" << endl;
 	}
-	for(p = First; p->next != NULL && strcmp(p->next->info.MASV, sv.MASV) != 0; p = p->next);
+		return FALSE;
+	if(strcmp(First->info.MASV,masv) == 0)
+	{
+		printInfo(p);
+		cout << "Ban muon xoa sinh vien nay khong?(y/n) ";
+		cin >> cf;
+		if(cf == 'y' || cf == 'Y')
+		{
+			p = First;
+			First = p->next;
+			delete p;
+			return COMPLETE;
+		}
+	}
+	for(p = First; p->next != NULL && strcmp(p->next->info.MASV, masv) != 0; p = p->next);
 	if(p->next != NULL)
 	{
-		PTRSV q = p->next;
-		p->next = q->next;
-		delete q;
-		return COMPLETE;
+		printInfo(p);
+		cout << "Ban muon xoa sinh vien nay khong?(y/n) ";
+		cin >> cf;
+		if(cf == 'y' || cf == 'Y')
+		{
+			PTRSV q = p->next;
+			p->next = q->next;
+			delete q;
+			return COMPLETE;
+		}
+		else
+			return UNDONE;
 	}
 	return FALSE;
 }
@@ -215,11 +243,11 @@ void saveStudentList(Lop Class, char *filename)
 	PTRSV p;
 	p = new nodesv;
 	ofs.open(filename, ios_base::out);
+	ofs << Class.TENLOP << endl;
 	ofs << Class.MALOP << endl;
 	for(p = Class.Firstsv;p != NULL; p = p->next)
 		ofs << p->info.MASV << ", " << p->info.HO << " " << p->info.TEN << ", "
 		<< p->info.PHAI << ", " << p->info.password << endl;
-	ofs << "#END";
 	ofs.close();
 }
 
@@ -235,7 +263,7 @@ void loadStudentList(Lop &Class, char *filename)
 		cout << "Ten file chua dung, moi nhap lai!!" << endl;
 		system("pause");
 	}
-	ifs >> malop;
+	ifs.getline(malop, 11, '\n');
 	if(strcmp(Class.MALOP, malop) == 0)
 	{
 		Class.Firstsv = new nodesv;
@@ -295,7 +323,7 @@ void printStudentList(PTRSV First)
 		Sleep(2000);
 		return;
 	}
-	cout << setw(4) << "STT" << setw(20) << "Ho va ten" << setw(15) << "Ma sinh vien" << endl;
+	cout << setw(4) << "STT" << setw(20) << "Ho va ten" << setw(15) << "Ma sinh vien" << setw(5) << "Phai" << endl;
 	for(p = First; p != NULL; p = p->next, ++i)
 	{
 		cout << setw(3) << i << setw(5);
@@ -304,8 +332,17 @@ void printStudentList(PTRSV First)
 		printString(p->info.TEN);
 		cout << setw(10);
 		printString(p->info.MASV);
+		cout << '\t';
+		printString(p->info.PHAI);
 		cout << endl;
 	}
+}
+
+void printInfo(PTRSV p)
+{
+	cout << p->info.MASV << endl;
+	cout << p->info.HO << " " << p->info.TEN << endl;
+	cout << p->info.PHAI << endl;
 }
 
 //------Mark Proccessing------
@@ -500,6 +537,48 @@ void printSubjectList(PTRMH First)
 		cout << setw(10);
 		printString(p->info.MAMH);
 		cout << endl;
+	}
+}
+
+int deleteSubject(PTRMH &First, char *mamh)
+{
+	if(First == NULL)
+	{
+		cout << "Danh sach rong!!" << endl;
+		Sleep(1500);
+		return FALSE;
+	}
+	PTRMH p, q;
+	char cf;
+	if(strcmp(First->info.MAMH, mamh) == 0)
+	{
+		cout << "Ma mon hoc: " << p->info.MAMH << endl;
+		cout << "Ten mon hoc: " << p->info.TENMH << endl;
+		cout << "Ban co muon xoa mon hoc nay khoi danh sach khong?(y/n) ";
+		cin >> cf;
+		if(cf == 'y' || cf == 'Y')
+		{
+			p = First;
+			First = p->next;
+			delete p;
+			return COMPLETE;
+		}
+	}
+	for(p = First; p != NULL && strcmp(p->info.MAMH, mamh) != 0; q = p, p = p->next);
+	if(p != NULL)
+	{
+		cout << "Ma mon hoc: " << p->info.MAMH << endl;
+		cout << "Ten mon hoc: " << p->info.TENMH << endl;
+		cout << "Ban co muon xoa mon hoc nay khoi danh sach khong?(y/n) ";
+		cin >> cf;
+		if(cf == 'y' || cf == 'Y')
+		{
+			q->next = p->next;
+			delete p;
+			return COMPLETE;
+		}
+		else
+			return UNDONE;
 	}
 }
 
@@ -736,7 +815,7 @@ void createAVLTree(PTRQ &root)
 					continue;
 			}
 			else
-				ctos(buffer, x.noidung);
+				x.noidung = buffer;
 			memset(buffer, '\0', 2000);
 			cout << "Nhap noi dung lua chon A: ";
 			if(NhapChuoi(buffer) == ESC)
@@ -749,7 +828,7 @@ void createAVLTree(PTRQ &root)
 					continue;
 			}
 			else
-				ctos(buffer, x.A);
+				x.A = buffer;
 			cout << "Nhap noi dung lua chon B: ";
 			if(NhapChuoi(buffer) == ESC)
 			{
@@ -761,7 +840,7 @@ void createAVLTree(PTRQ &root)
 					continue;
 			}
 			else
-				ctos(buffer, x.B);
+				x.B = buffer;
 				cout << "Nhap noi dung lua chon C: ";
 			if(NhapChuoi(buffer) == ESC)
 			{
@@ -773,7 +852,7 @@ void createAVLTree(PTRQ &root)
 					continue;
 			}
 			else
-				ctos(buffer, x.C);
+				x.C = buffer;
 				cout << "Nhap noi dung lua chon D: ";
 			if(NhapChuoi(buffer) == ESC)
 			{
@@ -785,7 +864,7 @@ void createAVLTree(PTRQ &root)
 					continue;
 			}
 			else
-				ctos(buffer, x.D);
+				x.D = buffer;
 			cout << "Nhap dap an: ";
 			if(NhapChuoi(x.dapan) == ESC)
 			{
@@ -902,6 +981,111 @@ void removeAVL(PTRQ &root, int x)
 	}
 }
 
+void Intrav(PTRQ root, PTRCT &First)
+{
+   	PTRQ Stack[STACKSIZE];
+   	PTRQ p=root;
+   	PTRCT q = First;
+   	int sp=-1, check = 0;	// Khoi tao Stack rong
+   	char *c;
+	
+   	do
+   	{ 
+	   	while(p != NULL)
+		{	
+			Stack[++sp]= p;
+	 		p= p->left;
+      	}
+      	if (sp != -1)
+      	{
+			p=Stack[sp--];
+			if(check == 0)
+			{
+				check = 1; 
+				First = new nodedscauthi;
+				strcpy(First->MAMH, p->info.mamh);
+				First->info.id = new int[MAXCAUTHI];
+				First->info.id[0] = p->id;
+				q = First;
+				q->info.n = 1;
+			}
+			else
+			{
+				if(strcmp(q->MAMH, p->info.mamh) != 0)
+				{
+					for(q = First; q->next != NULL; q = q->next);
+					insertAfter(q, p->info.mamh);
+					if(q != NULL)
+						q->info.id[0] = p->id;
+					q->info.n = 1;
+				}
+				else
+					addID(q->info, p->id);
+			}
+			p=p->right;
+      	}
+      	else 
+			break;
+   }while (1);
+
+}
+
+
+
+//------List of subject quest proccessing------
+
+void insertAfter(PTRCT &p, char *mamh)
+{
+	if(p == NULL)
+	{
+		cout << "Khong the them vi danh sach rong!!" << endl;
+		Sleep(2000);
+		return;
+	}
+	PTRCT q;
+	q = new nodedscauthi;
+	strcpy(q->MAMH, mamh);
+	q->info.id = new int[MAXCAUTHI];
+	q->next = p->next;
+	p->next = q;
+}
+
+void addID(dscauthi &ds, int id)
+{
+	if(ds.n == MAXCAUTHI)
+	{
+		cout << "Danh sach day, khong the them duoc!!" << endl;
+		Sleep(2000);
+		return;
+	}
+	int i;
+	for(i = 0; i < MAXCAUTHI && id > ds.id[i]; ++i);
+	moveOut(ds, i);
+	ds.id[i + 1] = id;
+	++ds.n;
+}
+
+void moveOut(dscauthi &ds, int i)
+{
+	int x, y;
+	for(int j = ds.n; j > i - 1; --j)
+	{
+		ds.id[j] = ds.id[j - 1];
+	}
+}
+
+void clearSubjectQuest(PTRCT &First)
+{
+	PTRCT p;
+	while(First != NULL)
+	{
+		p = First;
+		First = p->next;
+		delete p->info.id;
+		delete p;
+	}
+}
+
 //------Others------
 
 int c_a_r(char td [][50])
@@ -942,6 +1126,34 @@ void stoc(string s, char *c)
 	{
 		c[i] = s[i];
 	}
+}
+
+int checkEsc ()
+{
+	
+	int check;
+	char *x=new char [2];
+	check2_esc:
+	gotoxy(wherex(), wherey() + 1);
+	xoadong(wherey(), 3);
+	cout << "Ban muon quay lai menu?(y/n) ";
+	check = NhapMa(x, 2);
+	if(check == ESC)
+		return CONTINUE;
+	else if(check == ENTER)
+	{
+		if(x[0] == 'y' || x[0] == 'Y')
+			return BREAK;
+		else if(x[0] == 'n' || x[0] == 'N')
+			return CONTINUE;
+		else
+		{
+			cout << "Xac nhan khong phu hop!";          
+			Sleep(1500);
+			goto check2_esc;
+		}
+	}
+	delete x;
 }
 
 void printString(char *x)
@@ -1039,13 +1251,15 @@ void saveWork(dslop ds, char *filename, PTRMH FirstMH)
 	ofs.close();
 }
 
-void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root)
+void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root, PTRCT &FirstMT)
 {
 	ifstream ifs;
 	PTRSV p, pr;
 	PTRD q, qr;
 	PTRMH s, sr;
+	PTRCT ql;
 	cauhoi quest;
+	dscauthi qlist;
 //	sinhvien x;
 	
 	int i, j, k, maxsv, maxdiem, maxmh, maxq, id;
@@ -1128,7 +1342,7 @@ void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root)
 	}
 	ifs.getline(buffer, 100, '\n');
 	maxq = atoi(buffer);
-	for(i = 0; i < maxq; ++i)
+	for(i = 0; i < maxq; ++i)					//Doc cay nhi phan
 	{
 		ifs.getline(buffer, 100, '\n');
 		id = atoi(buffer);
@@ -1152,12 +1366,26 @@ void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root)
 			root->info = quest;
 			root->left = NULL;
 			root->right = NULL;
+//			FirstMT = new nodedscauthi;
+//			strcpy(FirstMT->MAMH, quest.mamh);
+//			FirstMT->info.id = new int[MAXCAUTHI];
+//			FirstMT->info.id[0] = id;
+//			FirstMT->next = NULL;
+//			ql = FirstMT;
 		}
 		else
 		{
+//			cout << ql->MAMH << endl;
+//			if(strcmp(ql->MAMH, quest.mamh) != 0)
+//			{
+//				for(ql = FirstMT; ql->next != NULL; ql = ql->next);
+//				insertAfter(ql, quest.mamh);
+//			}
 			insertAVLTree(root, id, quest);
 		}
+//		addID(ql->info, id);
 	}
+	
 	ifs.close();
 }
 
@@ -1174,7 +1402,7 @@ void HighLight () {
 int MenuDong(char td [][50]) {
 	Normal();
 	system("cls");
-	cout << "\t\t==============Image proccessing==============";
+	cout << "\t\t==============THI TRAC NGHIEM==============";
 	int chon =0, so_item;
 	int i;
 	so_item = c_a_r(td);
@@ -1542,6 +1770,14 @@ int DangNhap(dslop DSlop)
 
 //------Class List Proccessing-------
 
+Lop *searchClass(dslop ds, char *x)
+{
+	int i;
+	Lop *result;
+	for(i = 0; i < ds.n && strcmp(x, ds.lop[i].MALOP) != 0; ++i);
+	return (i==ds.n?result=NULL:result=&ds.lop[i]);
+}
+
 void Themlop(dslop &ds)
 {
 	int i;
@@ -1624,6 +1860,29 @@ void printClassList(dslop ds)
 		x = strlen(ds.lop[i].TENLOP);
 		y = strlen(ds.lop[i].MALOP);
 		cout << setw(4) << i + 1 << setw(18 + (x/2)) << ds.lop[i].TENLOP << setw(20 + (y/2)) << ds.lop[i].MALOP << endl;
+	}
+}
+
+void deleteClass(dslop &ds, Lop Class)
+{
+	for(int i = 0; i < ds.n; ++i)
+	{
+		if(strcmp(ds.lop[i].MALOP, Class.MALOP) == 0)
+		{
+			moveToLast(ds, i);
+			break;
+		}
+	}
+	--ds.n;
+}
+void moveToLast(dslop &ds, int i)
+{
+	Lop Class;
+	for(; i < ds.n - 1; ++i)
+	{
+		Class = ds.lop[i];
+		ds.lop[i] = ds.lop[i+1];
+		ds.lop[i+1] = Class;
 	}
 }
 
