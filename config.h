@@ -13,7 +13,7 @@
 #define MAXCAUTHI 100
 using namespace std;
 
-const int dong = 2;
+const int dong = 3;
 const int cot = 2;
 const int Up = 72;
 const int Down = 80;
@@ -22,6 +22,7 @@ const int ENTER = 13;
 const int ESC = 27;
 const int BSPACE = 8;
 const string ER_FULL_LIST = "Danh sach day!!";
+int maxid;
 
 struct monhoc
 {
@@ -53,6 +54,8 @@ struct sinhvien
 	char HO[51];
 	char TEN[11];
 	char PHAI[5];
+	int *ctdethi;
+	
 };
 struct nodesv
 {

@@ -67,7 +67,7 @@ B. Dieu khien, Du lieu, Dia chi
 C. Du lieu, Phu thuoc, Dieu khien
 D. Du lieu, Dieu khien, Phu tro
 B
-4
+18
 KTMT
 Cac hoat dong cua may tinh gom:
 A. Ngat, giai ma lenh, vao/ra
@@ -83,7 +83,7 @@ B. Thanh ghi chua lenh sap thuc hien
 C. Thanh ghi chua dia chi lenh sap thuc hien
 D. Thanh ghi
 B
-6
+27
 KTMT
 Trong may tinh,ngat NMI la gi
 A. Ngat ngoai le khong chan duoc
@@ -131,7 +131,7 @@ B. 2
 C. 3
 D. 4
 C
-12
+25
 CTDL
 Danh sach lien ket don gom nhung thanh phan gi:
 A. Noi dung va so luong phan tu trong danh sach
@@ -155,7 +155,7 @@ B. Vung lien ket cua mot phan tu trong danh sach lien ket doi co 01 moi lien ket
 C. Vung lien ket cua mot phan tu trong danh sach lien ket doi co 02 moi lien ket voi 02 truoc va sau no trong danh sach.
 D. Vung lien ket cua mot phan tu trong danh sach lie ket doi co 02 moi lien ket voi phan tu dau va cuoi cua danh sach.
 C
-15
+6
 CTDL
 Dinh nghia nao la dung voi danh sach lien ket:
 A. Danh sach lien ket la cau truc du lieu dang cay.
@@ -179,7 +179,7 @@ B. So phan tu cua danh sach goi la chieu dai cua danh sach.
 C. Mot danh sach co chieu dai bang 0 la mot danh sach rong.
 D. Tat ca deu dung.
 D
-18
+4
 CTDL
 Cac tieu chuan de danh gia mot cau truc du lieu:
 A. Phai tiet kiem tai nguyen (bo nho trong).
@@ -235,7 +235,7 @@ B. Khao sat
 C. Chay thu
 D. Ky hop dong
 D
-25
+12
 CSDL
 SQL la ten viet tat cua:
 A. Structure Query Language
@@ -251,7 +251,7 @@ B. A=>AB
 C. AB=>BC
 D. AA=>C
 A
-27
+15
 CSDL
 Cac phep toan gop nhom duoc su dung sau menh de?
 A. SELECT
