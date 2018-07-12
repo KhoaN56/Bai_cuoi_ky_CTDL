@@ -19,9 +19,9 @@ int main()
 	PTRQ root = NULL, sq;
 	PTRSV sv;
 	PTRCT FirstMT = NULL;
-//	int *dapan;
 //	Lop temp;
 	loadWork(ds, "D15CQPU01.txt", dsmh, root, FirstMT);
+//	printStudentList(ds.lop[0].Firstsv);
 //	printClassList(ds);
 //	system("pause");
 //	system("cls");
@@ -50,10 +50,30 @@ int main()
 //	cout << FirstMT->next->MAMH << endl;
 //	for(int i = 0; i < FirstMT->next->info.n; ++i)
 //		cout << FirstMT->next->info.id[i] << endl;
-//	int socauthi = 3;
-//	dapan = printTest(root, FirstMT->info.id, socauthi);
+//					char *rep;
+//					int socauthi = 10;
+//					int point = 0;
+//					char *dapan;
+//					char *check;
+//					int *cauthi;
+//					cauthi = generateTest(FirstMT->info, socauthi);
+//					rep = printTest(root, cauthi, socauthi);
+//					for(int i = 0; i < socauthi; ++i)
+//					{
+//						check = search(root, cauthi[i])->info.dapan;
+//						if(check[0] == rep[i])
+//							point++;
+//					}
+//					Normal();
+//					system("cls");
+//					cout << point << endl;
+//					delete rep;
+//					delete cauthi;
 //	for(int i = 0; i < socauthi; ++i)
 //		cout << dapan[i] << endl;
+//									cout << point << endl;
+//									delete dapan;
+//									delete cauthi;
 //	char *x = new char[100];
 //	char *x1 = new char[100];
 //
@@ -909,7 +929,15 @@ int main()
 //		cout << "May muon thi khong?!" << endl;
 //	}
 //	delete x;
-//	delete dapan;
+//	int time = 10;
+//	do
+//	{
+//		Sleep(1000);
+//		gotoxy(300, 2);
+//		cout << time--;
+//		gotoxy(300, 2);
+//		cout << "  ";
+//	}while(time > 0);
 	clearTree(root);
 	clearList(ds);
 	clearList(dsmh);

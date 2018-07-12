@@ -26,7 +26,7 @@ void textcolor(int x)
 void gotoxy(int x, int y)
 {
 	HANDLE hConsoleOutput;
-	COORD Cursor_an_Pos = { x - 1,y - 1 };
+	COORD Cursor_an_Pos = {x, y};
 	hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hConsoleOutput, Cursor_an_Pos);
 }

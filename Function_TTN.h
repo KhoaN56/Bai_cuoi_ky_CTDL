@@ -44,8 +44,8 @@ void removeAVLNode(PTRQ &root, int x);
 void removeCase3(PTRQ &r, int x, PTRQ &rp);
 //------Multiple choice test------
 int *generateTest(dscauthi ds, int socauthi);
-int *printTest(PTRQ root, int *cauthi, int socauthi);
-int chooseAnswer(char td [4][100], PTRQ p, int &testtime);
+char *printTest(PTRQ root, int *cauthi, int socauthi);
+int chooseAnswer(string td[], PTRQ p, int testtime);
 //------List of subject quest proccessing------
 void insertAfter(PTRCT &p, char *mamh);
 void addID(dscauthi &ds, int id);
@@ -70,6 +70,8 @@ int MenuDong(char td [][50]);
 int NhapMa(char *x, int n_max);
 int NhapChuoi(char *x, int n_max);
 int NhapPass( char *x, int n_max);
+void Console_VeKhung(int ToaDoX, int ToaDoY, int Dai, int Rong);
+void Console_VeKhung_clean(int ToaDoX, int ToaDoY, int Dai, int Rong);
 //------Save file------
 void saveClassList(dslop ds, char *filename);
 void saveStudentList(Lop Class, char *filename);
@@ -211,31 +213,35 @@ int deleteStudent(PTRSV &First, char *masv)
 	if(First == NULL)
 	{
 		cout << "Danh sach rong!!" << endl;
-	}
 		return FALSE;
+	}
 	if(stricmp(First->info.MASV,masv) == 0)
 	{
-		printInfo(p);
+		printInfo(First);
 		cout << "Ban muon xoa sinh vien nay khong?(y/n) ";
 		cin >> cf;
 		if(cf == 'y' || cf == 'Y')
 		{
 			p = First;
 			First = p->next;
+			delete p->Firstdiem;
 			delete p;
 			return COMPLETE;
 		}
+		else 
+			return UNDONE;
 	}
 	for(p = First; p->next != NULL && stricmp(p->next->info.MASV, masv) != 0; p = p->next);
 	if(p->next != NULL)
 	{
-		printInfo(p);
+		printInfo(p->next);
 		cout << "Ban muon xoa sinh vien nay khong?(y/n) ";
 		cin >> cf;
 		if(cf == 'y' || cf == 'Y')
 		{
 			PTRSV q = p->next;
 			p->next = q->next;
+			delete q->Firstdiem;
 			delete q;
 			return COMPLETE;
 		}
@@ -332,19 +338,33 @@ void printStudentList(PTRSV First)
 		Sleep(2000);
 		return;
 	}
-	cout << setw(4) << "STT" << setw(20) << "Ho va ten" << setw(15) << "Ma sinh vien" << setw(5) << "Phai" << endl;
+	Console_VeKhung(4, 2, 52, 12);
+	gotoxy(5, 2);
+	cout <<  "STT";
+	gotoxy(15, 2);
+	cout << "Ho va ten";
+	gotoxy(34, 2);
+	cout << "Ma sinh vien";
+	gotoxy(48, 2);
+	cout << "Phai" << endl;
 	for(p = First; p != NULL; p = p->next, ++i)
 	{
-		cout << setw(3) << i << setw(5);
+		if(i < 10)
+			gotoxy(6, 2 + i);
+		else
+			gotoxy(5, 2 + i);
+		cout << i;
+		gotoxy(10, 2 + i);
 		printString(p->info.HO);
 		cout << " ";
 		printString(p->info.TEN);
-		cout << setw(10);
+		gotoxy(35, 2 + i);
 		printString(p->info.MASV);
-		cout << '\t';
+		gotoxy(49, 2 + i);
 		printString(p->info.PHAI);
 		cout << endl;
 	}
+//	Console_VeKhung_clean(4, 2, 52, 12);
 }
 
 void printInfo(PTRSV p)
@@ -996,23 +1016,40 @@ void Intrav(PTRQ root, PTRCT &First)
 
 }
 
-int *printTest(PTRQ root, int *cauthi, int socauthi)
+char *printTest(PTRQ root, int *cauthi, int socauthi)
 {
 	PTRQ quest;
-	char choices[4][100];
-	int *choice = new int[socauthi];
-	int i = 0, testtime = 20;
-	while(i < socauthi && testtime > 0)
+	string choices[4];
+	char *choice = new char[socauthi];
+	int i = 0, testtime = 1, check;
+	while(i < socauthi /*&& testtime > 0*/)
 	{
 		quest = search(root, cauthi[i]);
-		stoc(quest->info.A, choices[0]);
-		stoc(quest->info.B, choices[1]);
-		stoc(quest->info.C, choices[2]);
-		stoc(quest->info.D, choices[3]);
-		choice[i] = chooseAnswer(choices, quest, testtime);
-		Normal();
-		system("cls");
-		++i;
+		choices[0] = quest->info.A;
+		choices[1] = quest->info.B;
+		choices[2] = quest->info.C;
+		choices[3] = quest->info.D;
+//		stoc(quest->info.A, choices[0]);
+//		stoc(quest->info.B, choices[1]);
+//		stoc(quest->info.C, choices[2]);
+//		stoc(quest->info.D, choices[3]);
+		check = chooseAnswer(choices, quest, testtime);
+		switch(check)
+		{
+			case 1:
+				choice[i++] = 'A';
+				break;
+			case 2:
+				choice[i++] = 'B';
+				break;
+			case 3:
+				choice[i++] = 'C';
+				break;
+			case 4:
+				choice[i++] = 'D';
+				break;
+		}
+		testtime++;
 	}
 	return choice;
 }
@@ -1803,46 +1840,49 @@ int DangNhap(dslop DSlop)
 	delete pass;
 }
 
-int chooseAnswer(char td [4][100], PTRQ p, int &testtime) {
+int chooseAnswer(string td[], PTRQ p, int testtime) {
 	Normal();
 	system("cls");
 	cout << "\t\t==============THI TRAC NGHIEM==============" << endl;
 	int chon =0, so_item;
-	int i;
-	cout << p->info.noidung << endl;
-	for ( i=0; i< 4 ; i++) {
-		gotoxy(cot, dong +i);
-		cout << td[i];
+	int i = 0;
+	int posy[4];
+	cout << " " << testtime << ". " << p->info.noidung << endl;
+	gotoxy(cot, dong + i);
+	for (; i < 4 ; i++) {
+		posy[i] = wherey();
+		gotoxy(cot, posy[i]);
+		cout << td[i] << endl;
 	}
 	HighLight();
 	gotoxy(cot,dong+chon);
 	cout << td[chon];
 	char kytu;
 	do {
-		if(kbhit())
-		{
-			kytu = getch();
-			if (kytu == 0) kytu = getch();
+//		if(kbhit())
+//		{
+		kytu = getch();
+		if (kytu == 0) kytu = getch();
 		switch (kytu) {
 			case Up :
 				if (chon+1 >1) {
 					Normal();
-					gotoxy(cot,dong+chon);
+					gotoxy(cot, posy[chon]);
 					cout << td[chon];
 					chon --;
 					HighLight();
-					gotoxy(cot,dong+chon);
+					gotoxy(cot, posy[chon]);
 					cout << td[chon];
 				}
 				break;
 			case Down :
-				if (chon + 1 <so_item) {
+				if (chon + 1 < 4) {
 					Normal();
-					gotoxy(cot,dong+chon);
+					gotoxy(cot, posy[chon]);
 					cout << td[chon];
 					chon ++;
 					HighLight();
-					gotoxy(cot,dong+chon);
+					gotoxy(cot, posy[chon]);
 					cout << td[chon];
 				}
 				break;
@@ -1852,15 +1892,54 @@ int chooseAnswer(char td [4][100], PTRQ p, int &testtime) {
 				system("cls");
 				return 0;
 		}  // end switch
-		}
-		else
-		{
-			Sleep(1000);
-			gotoxy(150, 2);
-			Normal();
-			cout << testtime--;
-		}
-	} while (testtime > 0);
+//		}
+//		else
+//		{
+//			Sleep(1000);
+//			gotoxy(350, 2);
+//			Normal();
+//			cout << testtime--;
+//			cout << "            ";
+//			gotoxy(350, 2);
+//		}
+	} while (1);
+}
+
+void Console_VeKhung(int ToaDoX, int ToaDoY, int Dai, int Rong) {
+	// Tren 
+	gotoxy(ToaDoX, ToaDoY); cout << char(201);// Goc Trai tren cung
+	gotoxy(Dai + ToaDoX, ToaDoY); cout << char(187);// Goc Phai tren cung
+													// Duoi
+	gotoxy(ToaDoX, Rong + ToaDoY); cout << char(200);// Goc Trai duoi cung
+	gotoxy(Dai + ToaDoX, Rong + ToaDoY); cout << char(188);// Goc Phai duoi cung
+														   // In Dong Ngang:
+	for (int i = 1; i<Dai; i++) {
+		gotoxy(i + ToaDoX, ToaDoY); cout << char(205);//Tren
+		gotoxy(i + ToaDoX, Rong + ToaDoY); cout << char(205);//Duoi
+	}// for Dong
+	 // In Cot Dung:
+	for (int i = 1; i<Rong; i++) {
+		gotoxy(ToaDoX, i + ToaDoY); cout << char(186);// Cot Trai
+		gotoxy(Dai + ToaDoX, i + ToaDoY); cout << char(186);// Cot Phai
+	}// for Cot
+}
+void Console_VeKhung_clean(int ToaDoX, int ToaDoY, int Dai, int Rong) {
+	// Tren 
+	gotoxy(ToaDoX, ToaDoY); cout << " ";// Goc Trai tren cung
+	gotoxy(Dai + ToaDoX, ToaDoY); cout << " ";// Goc Phai tren cung
+													// Duoi
+	gotoxy(ToaDoX, Rong + ToaDoY); cout << " ";// Goc Trai duoi cung
+	gotoxy(Dai + ToaDoX, Rong + ToaDoY); cout << " ";// Goc Phai duoi cung
+														   // In Dong Ngang:
+	for (int i = 1; i<Dai; i++) {
+		gotoxy(i + ToaDoX, ToaDoY); cout << " ";//Tren
+		gotoxy(i + ToaDoX, Rong + ToaDoY); cout << " ";//Duoi
+	}// for Dong
+	 // In Cot Dung:
+	for (int i = 1; i<Rong; i++) {
+		gotoxy(ToaDoX, i + ToaDoY); cout << " ";// Cot Trai
+		gotoxy(Dai + ToaDoX, i + ToaDoY); cout << " ";// Cot Phai
+	}// for Cot
 }
 
 //------Class List Proccessing-------

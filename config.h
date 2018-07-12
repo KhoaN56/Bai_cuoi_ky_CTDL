@@ -84,7 +84,7 @@ struct cauhoi
 	string B;
 	string C;
 	string D;
-	char dapan[2];
+	char dapan[1];
 };
 
 struct nodecauhoi
