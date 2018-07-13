@@ -137,7 +137,7 @@ Danh sach lien ket don gom nhung thanh phan gi:
 A. Noi dung va so luong phan tu trong danh sach
 B. Noi dung cua tung phan tu trong danh sach
 C. Noi dung cua phan tu va hai con tro giu dia chi cua phan tu truoc va sau no
-D. Noi dung cua phan tu va mot con tro giu dic chi cua phan tu tiep theo
+D. Noi dung cua phan tu va mot con tro giu dia chi cua phan tu tiep theo
 D
 13
 CTDL

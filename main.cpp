@@ -21,8 +21,6 @@ int main()
 	PTRCT FirstMT = NULL;
 //	Lop temp;
 	loadWork(ds, "D15CQPU01.txt", dsmh, root, FirstMT);
-//	printStudentList(ds.lop[0].Firstsv);
-//	printClassList(ds);
 //	system("pause");
 //	system("cls");
 //	cout << ds.n << endl;
@@ -32,7 +30,7 @@ int main()
 //	cin >> temp.TENLOP;
 //	addClass(ds, temp);
 //	system("cls");
-//	printClassList(ds);
+//	printClassList(ds);	
 //	removeAVLNode(root, 28);
 //	removeAVLNode(root, 12);
 //	removeAVLNode(root, 16);
@@ -51,18 +49,19 @@ int main()
 //	for(int i = 0; i < FirstMT->next->info.n; ++i)
 //		cout << FirstMT->next->info.id[i] << endl;
 //					char *rep;
-//					int socauthi = 10;
+//					int socauthi = 5;
 //					int point = 0;
 //					char *dapan;
 //					char *check;
 //					int *cauthi;
+//					float donvi = 10 * 1.0 / socauthi; 
 //					cauthi = generateTest(FirstMT->info, socauthi);
 //					rep = printTest(root, cauthi, socauthi);
 //					for(int i = 0; i < socauthi; ++i)
 //					{
 //						check = search(root, cauthi[i])->info.dapan;
 //						if(check[0] == rep[i])
-//							point++;
+//							point += donvi;
 //					}
 //					Normal();
 //					system("cls");

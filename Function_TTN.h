@@ -24,7 +24,7 @@ int emptyList(PTRD First);
 int countMark(PTRD First);
 void insertFirst(PTRD &First, diem x);
 void insertAfter(PTRD p, diem x);
-PTRD searchMark(PTRD &First, monhoc &MH);
+PTRD searchMark(PTRD First, monhoc MH);
 //------Subject Proccessing------
 int emptyList(PTRMH First);
 int countSubject(PTRMH FirstMH);
@@ -45,7 +45,7 @@ void removeCase3(PTRQ &r, int x, PTRQ &rp);
 //------Multiple choice test------
 int *generateTest(dscauthi ds, int socauthi);
 char *printTest(PTRQ root, int *cauthi, int socauthi);
-int chooseAnswer(string td[], PTRQ p, int testtime);
+int chooseAnswer(string td[], PTRQ p, int &testtime, int cau);
 //------List of subject quest proccessing------
 void insertAfter(PTRCT &p, char *mamh);
 void addID(dscauthi &ds, int id);
@@ -58,7 +58,7 @@ void printInfo(PTRSV p);
 void printStudentList(PTRSV First);
 void printSubjectList(PTRMH First);
 void printClassList(dslop ds);
-void printMarkSubject(Lop &Class, monhoc &MH);
+void printMarkSubject(Lop Class, monhoc MH);
 //------Others------
 void viethoa(char *x);
 void stoc(string s, char *c);
@@ -338,7 +338,7 @@ void printStudentList(PTRSV First)
 		Sleep(2000);
 		return;
 	}
-	Console_VeKhung(4, 2, 52, 12);
+//	Console_VeKhung(4, 2, 52, 12);
 	gotoxy(5, 2);
 	cout <<  "STT";
 	gotoxy(15, 2);
@@ -447,7 +447,7 @@ void loadMarkList(Lop Class, monhoc MH, char *filename)
 	ifs.close();
 }
 
-PTRD searchMark(PTRD &First, monhoc &MH)
+PTRD searchMark(PTRD First, monhoc MH)
 {
 	for(PTRD p = First; p != NULL; p = p->next)
 		if(stricmp(p->info.Mamh, MH.MAMH) == 0)
@@ -469,7 +469,7 @@ int countMark(PTRD First)
 	return i;
 }
 
-void printMarkSubject(Lop &Class, monhoc &MH)
+void printMarkSubject(Lop Class, monhoc MH)
 {
 	if(Class.Firstsv == NULL)
 	{
@@ -481,20 +481,38 @@ void printMarkSubject(Lop &Class, monhoc &MH)
 	PTRD q;
 	PTRSV p;
 	cout << "\t\t\t\tDANH SACH DIEM THI MON " << MH.TENMH << " LOP " << Class.MALOP << endl << endl;
-	cout << setw(4) << "STT" << setw(20) << "Ho va ten" << setw(15) << "Ma sinh vien" << setw(10) << "Diem thi" << endl;
-	for(p = Class.Firstsv; p != NULL; p = p->next)
+	gotoxy(5, 2);
+	cout <<  "STT";
+	gotoxy(15, 2);
+	cout << "Ho va ten";
+	gotoxy(34, 2);
+	cout << "Ma sinh vien";
+	gotoxy(52, 2);
+	cout << "Diem thi";
+	for(p = Class.Firstsv; p != NULL; p = p->next, ++i)
 	{
-		cout << setw(3) << i << setw(5);
+		if(i < 10)
+			gotoxy(6, 2 + i);
+		else
+			gotoxy(5, 2 + i);
+		cout << i;
+		gotoxy(10, 2 + i);
 		printString(p->info.HO);
 		cout << " ";
 		printString(p->info.TEN);
-		cout << "\t";
+		gotoxy(35, 2 + i);
 		printString(p->info.MASV);
 		q = searchMark(p->Firstdiem, MH);
 		if(q == NULL)
-			cout << "\tChua thi" << endl;
+		{
+			gotoxy(52, 2 + i);
+			cout << "Chua thi";
+		}
 		else
-			cout << "\t" << q->info.mark << endl;
+		{
+			gotoxy(56, 2 + i);
+			cout <<  q->info.mark;
+		}
 	}
 }
 
@@ -558,12 +576,22 @@ void printSubjectList(PTRMH First)
 	}
 	PTRMH p;
 	int i = 1;
-	cout << setw(4) << "STT" << setw(20) << "Ten mon hoc" << setw(15) << "Ma mon hoc" << endl;
+	gotoxy(5, 2);
+	cout << "STT";
+	gotoxy(20, 2);
+	cout << "Ten mon hoc";
+	gotoxy(50, 2);
+	cout << "Ma mon hoc" << endl;
 	for(p = First; p != NULL; p = p->next, ++i)
 	{
-		cout << setw(3) << i << setw(8);
+		if(i < 10)
+			gotoxy(6, 2 + i);
+		else
+			gotoxy(5, 2 + i);
+		cout << i;
+		gotoxy(13, 2 + i);
 		printString(p->info.TENMH);
-		cout << setw(10);
+		gotoxy(53, 2 + i);
 		printString(p->info.MAMH);
 		cout << endl;
 	}
@@ -1021,8 +1049,8 @@ char *printTest(PTRQ root, int *cauthi, int socauthi)
 	PTRQ quest;
 	string choices[4];
 	char *choice = new char[socauthi];
-	int i = 0, testtime = 1, check;
-	while(i < socauthi /*&& testtime > 0*/)
+	int i = 0, testtime = 30, check;
+	while(i < socauthi && testtime > 0)
 	{
 		quest = search(root, cauthi[i]);
 		choices[0] = quest->info.A;
@@ -1033,7 +1061,7 @@ char *printTest(PTRQ root, int *cauthi, int socauthi)
 //		stoc(quest->info.B, choices[1]);
 //		stoc(quest->info.C, choices[2]);
 //		stoc(quest->info.D, choices[3]);
-		check = chooseAnswer(choices, quest, testtime);
+		check = chooseAnswer(choices, quest, testtime, i+1);
 		switch(check)
 		{
 			case 1:
@@ -1049,7 +1077,6 @@ char *printTest(PTRQ root, int *cauthi, int socauthi)
 				choice[i++] = 'D';
 				break;
 		}
-		testtime++;
 	}
 	return choice;
 }
@@ -1247,7 +1274,8 @@ void printString(char *x)
 		return;
 	while(i < strlen(x))
 	{
-		cout << x[i++];
+		cout << x[i];
+		++i;
 	}
 }
 
@@ -1331,11 +1359,12 @@ void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root, PTRCT &Firs
 	PTRD q, qr;
 	PTRMH s, sr;
 	PTRCT ql, qlr;
+	PTRCTDT ct, ctr;
 	cauhoi quest;
 	dscauthi qlist;
 //	sinhvien x;
 	
-	int i, j, k, maxsv, maxdiem, maxmh, id;
+	int i, j, k, z, maxsv, maxdiem, maxmh, id;
 	char buffer[2000];
 	ifs.open(filename, ios_base::in);
 	if(ifs.fail() == true)
@@ -1366,7 +1395,9 @@ void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root, PTRCT &Firs
 			for(k = 0; k < maxdiem; ++k)
 			{
 				q = new nodediem;
+//				ct = new nodechitietdethi;
 				ifs.getline(q->info.Mamh, 9, ',');
+//				strcpy(ct->info.MAMH, q->info.Mamh);
 				if(k == maxdiem - 1)
 				{
 					ifs.getline(buffer, 100, '\n');
@@ -1378,14 +1409,31 @@ void loadWork(dslop &ds, char *filename, PTRMH &FirstMH, PTRQ &root, PTRCT &Firs
 				}
 				ifs.getline(buffer, 100, ',');
 				q->info.mark = atoi(buffer);
+//				ifs.getline(buffer, 100, ',');
+//				ct->info.socauthi = atoi(buffer);
+//				ct->info.idcauthi = new int[ct->info.socauthi];
+//				ct->info.cautraloi = new char[ct->info.socauthi];
+//				for(z = 0; z < ct->info.socauthi; ++z)
+//				{
+//					ifs.getline(buffer, 100, ',');
+//					ct->info.idcauthi[z] = atoi(buffer);
+//					ifs.getline(buffer, 100, ',');
+//					ct->info.cautraloi[z] = buffer[0];
+//				}
 				if(k == 0)
+				{
 					p->Firstdiem = q;
+//					p->Firstctdt = ct;
+				}
 				else
 				{
 					for(qr = p->Firstdiem; qr->next != NULL; qr = qr->next);
+//					for(ctr = p->Firstctdt; ctr->next != NULL; ctr = ctr->next);
 					qr->next = q;
+//					ctr->next = ct;
 				}
 				q->next = NULL;
+//				ct->next = NULL;
 			}
 			if(j == 0)
 				ds.lop[i].Firstsv = p;
@@ -1840,14 +1888,14 @@ int DangNhap(dslop DSlop)
 	delete pass;
 }
 
-int chooseAnswer(string td[], PTRQ p, int testtime) {
+int chooseAnswer(string td[], PTRQ p, int &testtime, int cau) {
 	Normal();
 	system("cls");
 	cout << "\t\t==============THI TRAC NGHIEM==============" << endl;
 	int chon =0, so_item;
 	int i = 0;
 	int posy[4];
-	cout << " " << testtime << ". " << p->info.noidung << endl;
+	cout << "\n\n " << cau << ". " << p->info.noidung << endl;
 	gotoxy(cot, dong + i);
 	for (; i < 4 ; i++) {
 		posy[i] = wherey();
@@ -1859,8 +1907,8 @@ int chooseAnswer(string td[], PTRQ p, int testtime) {
 	cout << td[chon];
 	char kytu;
 	do {
-//		if(kbhit())
-//		{
+		if(kbhit())
+		{
 		kytu = getch();
 		if (kytu == 0) kytu = getch();
 		switch (kytu) {
@@ -1892,16 +1940,16 @@ int chooseAnswer(string td[], PTRQ p, int testtime) {
 				system("cls");
 				return 0;
 		}  // end switch
-//		}
-//		else
-//		{
-//			Sleep(1000);
-//			gotoxy(350, 2);
-//			Normal();
-//			cout << testtime--;
-//			cout << "            ";
-//			gotoxy(350, 2);
-//		}
+		}
+		else
+		{
+			gotoxy(1, 2);
+			Normal();
+			cout << "        ";
+			gotoxy(1, 2);
+			cout << "\t\t\t\t\t\t\t" << testtime--;
+			Sleep(1000);
+		}
 	} while (1);
 }
 
@@ -2010,13 +2058,24 @@ void loadClassList(dslop &ds, char *filename)
 
 void printClassList(dslop ds)
 {
-	int x, y;
-	cout << setw(5) << "STT" << setw(20) << "Ten lop" << setw(20) << "Ma lop" << endl;
-	for (int i = 0; i < ds.n; ++i)
+	int i;
+	gotoxy(5, 2);
+	cout << "STT";
+	gotoxy(20, 2);
+	cout << "Ten lop";
+	gotoxy(45, 2);
+	cout << "Ma lop" << endl;
+	for (i = 0; i < ds.n; ++i)
 	{
-		x = strlen(ds.lop[i].TENLOP);
-		y = strlen(ds.lop[i].MALOP);
-		cout << setw(4) << i + 1 << setw(18 + (x/2)) << ds.lop[i].TENLOP << setw(20 + (y/2)) << ds.lop[i].MALOP << endl;
+		if(i < 10)
+			gotoxy(6, 3 + i);
+		else
+			gotoxy(5, 3 + i);
+		cout << i + 1;
+		gotoxy(13, 3 + i);
+		cout << ds.lop[i].TENLOP;
+		gotoxy(43, 3 + i);
+		cout << ds.lop[i].MALOP;
 	}
 }
 

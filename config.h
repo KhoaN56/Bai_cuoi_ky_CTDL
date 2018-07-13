@@ -13,7 +13,7 @@
 #define MAXCAUTHI 100
 using namespace std;
 
-const int dong = 3;
+const int dong = 4;
 const int cot = 2;
 const int Up = 72;
 const int Down = 80;
@@ -47,6 +47,20 @@ struct nodediem
 	struct nodediem *next;
 };
 typedef nodediem *PTRD;
+struct chitietdethi
+{
+	char MAMH[7];
+	int socauthi;
+	int *idcauthi;
+	char *cautraloi;
+};
+
+struct nodechitietdethi
+{
+	chitietdethi info;
+	struct nodechitietdethi *next;
+};
+typedef nodechitietdethi *PTRCTDT;
 struct sinhvien
 {
 	char password[8];
@@ -61,9 +75,12 @@ struct nodesv
 {
 	sinhvien info;
 	nodediem *Firstdiem;
+	nodechitietdethi *Firstctdt;
 	struct nodesv *next;
 };
 typedef nodesv *PTRSV;
+
+
 struct Lop
 {
 	char MALOP[11];
